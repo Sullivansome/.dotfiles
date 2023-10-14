@@ -23,13 +23,13 @@ if [[ "$(uname)" == "Darwin" ]]; then
 elif [[ "$(uname)" == "Linux" ]]; then
 	# Java sdk
 	export JAVA_HOME=~/dev/jdk-20.0.1
-	path+=("$JAVA_HOME/bin:$PATH")
+	export "$JAVA_HOME/bin:$PATH"
 
 	# Created by `pipx` on 2023-07-16 08:00:13
-	path+=("$PATH:/home/kevin/.local/bin")
+	export "$PATH:/home/kevin/.local/bin"
 
 	# Flutter
-	path+=("$PATH:~/dev/flutter/bin")
+	export "$PATH:~/dev/flutter/bin"
 
 else
 	echo 'Unknown OS!'
