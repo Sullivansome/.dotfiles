@@ -1,3 +1,41 @@
+
+# OS specified configurations start here
+if [[ "$(uname)" == "Darwin" ]]; then
+	# JAVA_HOME
+	export JAVA_HOME="/opt/homebrew/opt/openjdk"
+	# If you need to have openjdk first in your PATH, run:
+	#  echo 'export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> ~/.zshrc
+	# For compilers to find openjdk you may need to set:
+	#  export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
+	export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+	export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
+
+	# Flutter
+	export PATH="$PATH:$HOME/Dev/flutter/bin"
+
+	# SDKMAN
+	source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+	# Homebrew
+	# PATH="/usr/local/bin:$PATH"
+	eval "$(/opt/homebrew/bin/brew shellenv)"
+
+elif [[ "$(uname)" == "Linux" ]]; then
+	# Java sdk
+	export JAVA_HOME=~/dev/jdk-20.0.1
+	path+=("$JAVA_HOME/bin:$PATH")
+
+	# Created by `pipx` on 2023-07-16 08:00:13
+	path+=("$PATH:/home/kevin/.local/bin")
+
+	# Flutter
+	path+=("$PATH:~/dev/flutter/bin")
+
+else
+	echo 'Unknown OS!'
+
+fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -110,42 +148,6 @@ source $ZSH/oh-my-zsh.sh
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# OS specified configurations start here
-if [[ "$(uname)" == "Darwin" ]]; then
-	# JAVA_HOME
-	export JAVA_HOME="/opt/homebrew/opt/openjdk"
-	# If you need to have openjdk first in your PATH, run:
-	#  echo 'export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> ~/.zshrc
-	# For compilers to find openjdk you may need to set:
-	#  export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
-	export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
-	export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
-
-	# Flutter
-	export PATH="$PATH:$HOME/Dev/flutter/bin"
-
-	# SDKMAN
-	source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-	# Homebrew
-	# PATH="/usr/local/bin:$PATH"
-	eval "$(/opt/homebrew/bin/brew shellenv)"
-
-elif [[ "$(uname)" == "Linux" ]]; then
-	# Java sdk
-	export JAVA_HOME=~/dev/jdk-20.0.1
-	path+=("$JAVA_HOME/bin:$PATH")
-
-	# Created by `pipx` on 2023-07-16 08:00:13
-	path+=("$PATH:/home/kevin/.local/bin")
-
-	# Flutter
-	path+=("$PATH:~/dev/flutter/bin")
-
-else
-	echo 'Unknown OS!'
-
-fi
 
 # Other Paths:
 
