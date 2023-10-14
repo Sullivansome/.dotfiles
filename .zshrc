@@ -77,7 +77,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
+plugins=(git zsh-syntax-highlighting zsh-autosuggestions nvm)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -106,31 +106,49 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# JAVA_HOME
-export JAVA_HOME=
+# OS specified configurations start here
+if [[ "$(uname)" == "Darwin" ]]; then
+	# JAVA_HOME
+	export JAVA_HOME="/opt/homebrew/opt/openjdk"
+	# If you need to have openjdk first in your PATH, run:
+	#  echo 'export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> ~/.zshrc
+	# For compilers to find openjdk you may need to set:
+	#  export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
+	export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+	export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
 
-# If you need to have openjdk first in your PATH, run:
-#  echo 'export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> ~/.zshrc
-# For compilers to find openjdk you may need to set:
-#  export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
-export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
-# Flutter
-export PATH="$PATH:/Users/timcook/Dev/flutter/bin"
+	# Flutter
+	export PATH="$PATH:$HOME/Dev/flutter/bin"
 
-# SDKMAN
-source "$HOME/.sdkman/bin/sdkman-init.sh"
+	# SDKMAN
+	source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-# Homebrew
-PATH="/usr/local/bin:$PATH"
-eval "$(/opt/homebrew/bin/brew shellenv)"
+	# Homebrew
+	# PATH="/usr/local/bin:$PATH"
+	eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# NVM
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+elif [[ "$(uname)" == "Linux" ]]; then
+	# Java sdk
+	export JAVA_HOME=~/dev/jdk-20.0.1
+	path+=("$JAVA_HOME/bin:$PATH")
+
+	# Created by `pipx` on 2023-07-16 08:00:13
+	path+=("$PATH:/home/kevin/.local/bin")
+
+	# Flutter
+	path+=("$PATH:~/dev/flutter/bin")
+
+else
+	echo 'Unknown OS!'
+
+fi
+
+# Other Paths:
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
