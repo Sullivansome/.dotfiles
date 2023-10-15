@@ -254,13 +254,8 @@ if [ "$OS" == "Linux" ]; then
 
     # Completion message
     echo -e "\e[32mSetup completed! Restart your terminal or log in again to start using zsh with oh-my-zsh.\e[0m"
-    source "~/.zshrc"
-    exec zsh
-
-    # Change default shell to zsh
-    echo -e "\e[33m$counter. Changing the default shell to zsh...\e[0m"
-    chsh -s $(which zsh)
-    ((counter++))
+    echo "source ~/.zshrc"
+    echo "exec zsh"
 
 elif [ "$OS" == "Darwin" ]; then
     echo "Setting up macOS specific configurations..."
