@@ -287,4 +287,3 @@ elif [ "$OS" == "Darwin" ]; then
 else
     echo "Unknown OS! \n Installation abort!"
 fi
-
