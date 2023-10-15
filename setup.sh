@@ -28,8 +28,8 @@ if [ "$OS" == "Linux" ]; then
     ((counter++))
 
     # Install essential packages
-    echo -e "\e[33m$counter. Installing curl, wget, jq, git, and zsh...\e[0m"
-    sudo apt install -y curl wget jq git zsh || { echo "Failed to install required packages. Exiting."; exit 1; }
+    echo -e "\e[33m$counter. Installing curl, wget, jq, vim, git, and zsh...\e[0m"
+    sudo apt install -y curl wget jq git vim zsh || { echo "Failed to install required packages. Exiting."; exit 1; }
     ((counter++))
 
     # Change default shell to zsh
@@ -53,6 +53,11 @@ if [ "$OS" == "Linux" ]; then
     # Variables
     REPO_URL="https://github.com/Sullivansome/dotfiles.git"
     DEST_DIR="$HOME/.dotfiles"
+
+    # Check if the directory exists and back it up
+    if [ -d "$DEST_DIR" ]; then
+	mv "$DEST_DIR" "${DEST_DIR}_backup_$(date +%Y%m%d_%H%M%S)"
+    fi
 
     # Check if the directory exists and remove it
     if [ -d "$DEST_DIR" ]; then
@@ -106,7 +111,8 @@ if [ "$OS" == "Linux" ]; then
 
     while true; do
         read -p "The latest JDK version ready for use is $latest_version. Is this version satisfying? (yes/no) " answer
-         case $answer in
+
+        case $answer in
             [Yy]* ) 
                 echo "Thank you for the confirmation."
                 break;;
