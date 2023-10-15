@@ -21,7 +21,8 @@ if [[ "$(uname)" == "Darwin" ]]; then
 
 elif [[ "$(uname)" == "Linux" ]]; then
 	# Placeholder for Linux specific configurations
-
+	export JAVA_HOME=~/dev/jdk-21
+	export PATH="$JAVA_HOME/bin:$PATH
 else
 	echo 'Unknown OS!'
 
