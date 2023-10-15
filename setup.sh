@@ -102,7 +102,7 @@ if [ "$OS" == "Linux" ]; then
         # Creat download folder in the home directory if not exist
         cd 
         downloads_dir="$HOME/downloads"
-        if [ ! -d "$downloads_dir" ]; the$n
+        if [ ! -d "$downloads_dir" ]; then
             echo "Creating the Downloads folder..."
             mkdir "$downloads_dir"
             echo "Downloads folder created."
