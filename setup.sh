@@ -48,6 +48,8 @@ if [ "$OS" == "Linux" ]; then
     REPO_URL="https://github.com/Sullivansome/dotfiles.git"
     DEST_DIR="$HOME/.dotfiles"
 
+    cd
+
     if [ -d "$DEST_DIR" ]; then
         echo "Backing up dotfiles..."
         backup_dir="$HOME/.dotfiles_backup"
