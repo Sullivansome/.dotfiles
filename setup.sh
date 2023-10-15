@@ -4,11 +4,6 @@
 OS="$(uname)"
 
 if [ "$OS" == "Linux" ]; then
-    # Ensure we're running as root
-    if [[ "$EUID" -ne 0 ]]; then
-        echo "Please run this script as root."
-        exit
-    fi
 
     echo -e "\e[34mSetting up Linux specific configurations...\e[0m"
 
@@ -55,7 +50,7 @@ if [ "$OS" == "Linux" ]; then
     DEST_DIR="$HOME/.dotfiles"
 
     if [ -d "$DEST_DIR" ]; then
-        echo "$counter. Backing up dotfiles..."
+        echo "Backing up dotfiles..."
         backup_dir="$HOME/.dotfiles_backup"
         # Ensure the backup directory exists
         mkdir -p "$backup_dir"
