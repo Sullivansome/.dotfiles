@@ -27,21 +27,6 @@ if [ "$OS" == "Linux" ]; then
     sudo apt install -y curl wget jq git vim zsh || { echo "Failed to install required packages. Exiting."; exit 1; }
     ((counter++))
 
-    # Install oh-my-zsh
-    echo "$counter. Installing oh-my-zsh..."
-    sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-    ((counter++))
-
-    # Install power-level-10k
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.zsh_themes
-    ln -s ~/.dotfiles/.p10k.zsh ~/.p10k.zsh
-
-    # Install zsh extensions
-    echo "$counter. Installing zsh-extensions: auto-suggestions, syntax-highlighting..."
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    ((counter++))
-
     # Pull dotfiles from Github and apply changes
     echo "$counter. Pulling dotfiles from Github..."
     # Variables
@@ -79,6 +64,23 @@ if [ "$OS" == "Linux" ]; then
     ln -s ~/.dotfiles/.zshrc ~/.zshrc
     ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
     ((counter++))
+
+
+    # Install oh-my-zsh
+    echo "$counter. Installing oh-my-zsh..."
+    sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+    ((counter++))
+
+    # Install power-level-10k
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.zsh_themes
+    ln -s ~/.dotfiles/.p10k.zsh ~/.p10k.zsh
+
+    # Install zsh extensions
+    echo "$counter. Installing zsh-extensions: auto-suggestions, syntax-highlighting..."
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+    ((counter++))
+
 
     # Prompt before installing openjdk
     skip_openJDK_install=0
