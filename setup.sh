@@ -16,67 +16,6 @@ linux_menu() {
     echo "8) Exit"
 }
 
-# Function for macOS Menu (example, since the macOS part of your script is truncated)
-macos_menu() {
-    echo "Choose an action for macOS:"
-    echo "1) Install Homebrew"
-    # Add more macOS-specific actions here...
-    echo "2) Exit"
-}
-
-# Main execution starts here
-clear
-if [ "$OS" == "Linux" ]; then
-    linux_menu
-    while true; do
-        read -p "Enter choice [0-7]: " choice
-
-        case $choice in
-            1) update_packages ;;
-            2) install_essentials ;;
-            3) setup_dotfiles ;;
-            4) install_oh_my_zsh ;;
-            5) install_openjdk ;;
-            6) install_flutter ;;
-            0) echo "Goodbye!"; break ;;
-            *) echo "Invalid choice. Please choose between 1-7." ;;
-        esac
-
-        echo ""
-        echo "Choose next action:"
-        echo "1) Update packages"
-        echo "2) Install essential packages"
-        echo "3) Setup dotfiles"
-        echo "4) Install Oh My Zsh"
-        echo "5) Install OpenJDK"
-        echo "6) Install Flutter"
-        echo "0) Exit"
-    done
-
-elif [ "$OS" == "Darwin" ]; then
-    while true; do
-        macos_menu
-        read -p "Enter your choice: " choice
-        case $choice in
-            1) 
-                # Install Homebrew
-                # ... 
-                ;;
-            # ... Handle other macOS-specific options in a similar way
-            2) 
-                echo "Exiting..."
-                break
-                ;;
-            *)
-                echo "Invalid choice!"
-                ;;
-        esac
-    done
-
-else
-    echo "OS not recognized!"
-fi
-
 function update_packages() {
     echo -e "\e[33mUpdating package lists and updating...\e[0m"
     sudo apt update && sudo apt upgrade -y || { echo "Failed to update packages. Exiting."; exit 1; }
@@ -338,6 +277,71 @@ install_flutter() {
         fi
     }
 }
+
+# Function for macOS Menu (example, since the macOS part of your script is truncated)
+macos_menu() {
+    echo "Choose an action for macOS:"
+    echo "1) Install Homebrew"
+    # Add more macOS-specific actions here...
+    echo "2) Exit"
+}
+
+# Main execution starts here
+clear
+if [ "$OS" == "Linux" ]; then
+    linux_menu
+
+
+
+    while true; do
+        read -p "Enter choice [0-7]: " choice
+
+        case $choice in
+            1) update_packages ;;
+            2) install_essentials ;;
+            3) setup_dotfiles ;;
+            4) install_oh_my_zsh ;;
+            5) install_openjdk ;;
+            6) install_flutter ;;
+            0) echo "Goodbye!"; break ;;
+            *) echo "Invalid choice. Please choose between 1-7." ;;
+        esac
+
+        echo ""
+        echo "Choose next action:"
+        echo "1) Update packages"
+        echo "2) Install essential packages"
+        echo "3) Setup dotfiles"
+        echo "4) Install Oh My Zsh"
+        echo "5) Install OpenJDK"
+        echo "6) Install Flutter"
+        echo "0) Exit"
+    done
+
+elif [ "$OS" == "Darwin" ]; then
+    while true; do
+        macos_menu
+        read -p "Enter your choice: " choice
+        case $choice in
+            1) 
+                # Install Homebrew
+                # ... 
+                ;;
+            # ... Handle other macOS-specific options in a similar way
+            2) 
+                echo "Exiting..."
+                break
+                ;;
+            *)
+                echo "Invalid choice!"
+                ;;
+        esac
+    done
+
+else
+    echo "OS not recognized!"
+fi
+
 
 
 echo "Choose an option to proceed:"
