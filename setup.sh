@@ -23,13 +23,8 @@ if [ "$OS" == "Linux" ]; then
     ((counter++))
 
     # Install essential packages
-    echo -e "\e[33m$counter. Installing curl, wget, jq, git, and zsh...\e[0m"
-    sudo apt install -y curl wget jq git zsh || { echo "Failed to install required packages. Exiting."; exit 1; }
-    ((counter++))
-
-    # Change default shell to zsh
-    echo -e "\e[33m$counter. Changing the default shell to zsh...\e[0m"
-    chsh -s $(which zsh)
+    echo -e "\e[33m$counter. Installing curl, wget, jq, git, vim, and zsh...\e[0m"
+    sudo apt install -y curl wget jq git vim zsh || { echo "Failed to install required packages. Exiting."; exit 1; }
     ((counter++))
 
     # Install oh-my-zsh
@@ -78,8 +73,8 @@ if [ "$OS" == "Linux" ]; then
     git clone "$REPO_URL" "$DEST_DIR"
 
     # System links
-    ln -sf ~/.dotfiles/.zshrc ~/.zshrc
-    ln -sf ~/.dotfiles/.gitconfig ~/.gitconfig
+    ln -s ~/.dotfiles/.zshrc ~/.zshrc
+    ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
     ((counter++))
 
     # Prompt before installing openjdk
@@ -258,6 +253,11 @@ if [ "$OS" == "Linux" ]; then
     echo -e "\e[32mSetup completed! Restart your terminal or log in again to start using zsh with oh-my-zsh.\e[0m"
     source "~/.zshrc"
     exec zsh
+
+    # Change default shell to zsh
+    echo -e "\e[33m$counter. Changing the default shell to zsh...\e[0m"
+    chsh -s $(which zsh)
+    ((counter++))
 
 elif [ "$OS" == "Darwin" ]; then
     echo "Setting up macOS specific configurations..."
