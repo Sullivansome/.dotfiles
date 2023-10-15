@@ -221,7 +221,6 @@ function install_openjdk() {
         sed -i "${linux_section_start},${next_section_start}s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
     fi
 
-    fi
     echo "Updated .zshrc with the new JAVA_HOME and PATH."
     echo "$new_java_home"
 }
