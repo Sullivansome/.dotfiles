@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 1. Detect the OS
+# Detect the OS
 OS="$(uname)"
 
 # Function for Linux Menu
@@ -132,7 +132,7 @@ install_oh_my_zsh() {
 }
 
 function install_openjdk() {
-    cd ~
+    cd
 
     echo "Preparing for OpenJDK installation..."
 
@@ -221,6 +221,7 @@ function install_openjdk() {
         sed -i "${linux_section_start},${next_section_start}s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
     fi
     echo "Updated .zshrc with the new JAVA_HOME and PATH."
+    echo "$new_java_home"
 }
 
 install_flutter() {
