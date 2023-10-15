@@ -37,6 +37,9 @@ if [ "$OS" == "Linux" ]; then
     sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
     ((counter++))
 
+    # Install power-level-10k
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k 
+
     # Install zsh extensions
     echo "$counter. Installing zsh-extensions: auto-suggestions, syntax-highlighting..."
     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
@@ -103,28 +106,6 @@ if [ "$OS" == "Linux" ]; then
         else
             echo "The Downloads folder already exists."
         fi
-
-        # Retrive the latest openjdk 
-        # Fetch the main OpenJDK page content
-        page_content=$(curl -s https://jdk.java.net/)
-
-        # Extract the highest JDK version that's ready for use (ignoring early access)
-        latest_version=$(echo "$page_content" | grep -Eo 'Ready for use: <a href="\/[0-9]+' | grep -Eo '[0-9]+' | sort -nr | head -1)
-        echo "The latest version ready for use is: JDK $latest_version"
-
-        while true; do
-            read -p "The latest JDK version ready for use is $latest_version. Is this version satisfying? (yes/no) " answer
-            case $answer in
-                [Yy]* ) 
-                    echo "Thank you for the confirmation."
-                    break;;
-                [Nn]* ) 
-                    echo "Okay, please check the website for other versions."
-                    break;;
-                * ) 
-                    echo "Invalid answer. Please enter yes or no.";;
-            esac
-        done
 
         # Fetch and prompt for openjdk installation
         page_content=$(curl -s https://jdk.java.net/)
