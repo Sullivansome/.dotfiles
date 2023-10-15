@@ -210,8 +210,10 @@ function install_openjdk() {
 
     # Update .zshrc with JAVA_HOME and PATH, ensuring not to duplicate
     linux_section_start=$(grep -n 'elif \[\[ "$(uname)" == "Linux" \]\];' "$zshrc" | cut -d: -f1)
-    next_section_start=$(awk -v start="$linux_section_start" 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
+    next_section_start=$(awk -v start="$linux_section_start" 'NR > start && /^else$/ {print NR; exit}' "$zshrc")
     next_section_start=${next_section_start:-$(wc -l < "$zshrc")}
+
+
     new_java_home="$dev_dir/$jdk_folder"
 
     if ! grep -q "export JAVA_HOME=" "$zshrc"; then
@@ -222,8 +224,8 @@ function install_openjdk() {
     fi
 
     echo "Updated .zshrc with the new JAVA_HOME and PATH."
-    echo "linux_section start: $linux_section_start"
-    echo "next_section_start(end of file): $next_section_start"
+    echo "linux_section_start: $linux_section_start"
+    echo "next_section_start: $next_section_start"
     echo "$new_java_home"
 }
 
