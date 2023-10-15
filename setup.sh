@@ -72,7 +72,7 @@ if [ "$OS" == "Linux" ]; then
     fi
 
     # Clone the repo
-    mkdir -p "DEST_DIR"
+    mkdir -p "$DEST_DIR"
     git clone "$REPO_URL" "$DEST_DIR"
 
     # System links
