@@ -9,10 +9,10 @@ linux_menu() {
     echo "1) Update package lists and upgrade"
     echo "2) Install essential packages"
     echo "3) Pull dotfiles from Github and apply changes"
-    echo "4) Install oh-my-zsh"
-    echo "5) Install zsh extensions and powerlevel10k"
-    echo "6) Install OpenJDK"
-    echo "7) Install Flutter"
+    echo "4) Install oh-my-zsh, zsh extensions and powerlevel10k"
+    echo "5) Install OpenJDK"
+    echo "6) Install Flutter"
+    echo "7) Install Python"
     echo "8) Exit"
 }
 
