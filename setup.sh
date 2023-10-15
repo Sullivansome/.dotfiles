@@ -50,7 +50,17 @@ if [ "$OS" == "Linux" ]; then
 
     # Pull dotfiles from Github and apply changes
     echo "$counter. Pulling dotfiles from Github..."
-    git clone https://github.com/Sullivansome/dotfiles.git ~/.dotfiles
+    # Variables
+    REPO_URL="https://github.com/Sullivansome/dotfiles.git"
+    DEST_DIR="$HOME/.dotfiles"
+
+    # Check if the directory exists and remove it
+    if [ -d "$DEST_DIR" ]; then
+        rm -rf "$DEST_DIR"
+    fi
+
+    # Clone the repo
+    git clone "$REPO_URL" "$DEST_DIR"
     ((counter++))
 
     echo "$counter. Backing up and linking dotfiles..."
@@ -96,8 +106,7 @@ if [ "$OS" == "Linux" ]; then
 
     while true; do
         read -p "The latest JDK version ready for use is $latest_version. Is this version satisfying? (yes/no) " answer
-        
-        case $answer in
+         case $answer in
             [Yy]* ) 
                 echo "Thank you for the confirmation."
                 break;;
