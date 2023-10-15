@@ -181,7 +181,7 @@ if [ "$OS" == "Linux" ]; then
         echo ".zshrc backed up to: $backup_file"
 
         # Check if openJDK's path exists in .zshrc. If not, add it to the Linux section.
-        linux_section_start=(grep -n 'elif \[\[ "$(uname)" == "Linux" \]\];' ~/.zshrc | cut -d: -f1)
+        linux_section_start=$(grep -n 'elif \[\[ "$(uname)" == "Linux" \]\];' ~/.zshrc | cut -d: -f1)
         next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
 
         echo "Value of linux_section_start: $linux_section_start"
