@@ -215,10 +215,12 @@ function install_openjdk() {
     new_java_home="$dev_dir/$jdk_folder"
 
     if ! grep -q "export JAVA_HOME=" "$zshrc"; then
-        sed -i "${linux_section_start},${next_section_start}a\\# Java sdk\nexport JAVA_HOME=$new_java_home\nexport PATH=\$JAVA_HOME/bin:\$PATH\n" "$zshrc"
+        sed -i "${linux_section_start}a\\# Java sdk\nexport JAVA_HOME=$new_java_home\nexport PATH=\$JAVA_HOME/bin:\$PATH\n" "$zshrc"
     else
         sed -i "${linux_section_start},${next_section_start}s|export JAVA_HOME=.*|export JAVA_HOME=$new_java_home|" "$zshrc"
         sed -i "${linux_section_start},${next_section_start}s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
+    fi
+
     fi
     echo "Updated .zshrc with the new JAVA_HOME and PATH."
     echo "$new_java_home"
