@@ -38,7 +38,8 @@ if [ "$OS" == "Linux" ]; then
     ((counter++))
 
     # Install power-level-10k
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k 
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.zsh_themes
+    ln -s ~/.dotfiles/.p10k.zsh ~/.p10k.zsh
 
     # Install zsh extensions
     echo "$counter. Installing zsh-extensions: auto-suggestions, syntax-highlighting..."
