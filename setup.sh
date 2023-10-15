@@ -202,6 +202,8 @@ if [ "$OS" == "Linux" ]; then
         fi
         echo "Updated .zshrc with the new JAVA_HOME and PATH."
 
+    fi
+    
     # Prompt before installing flutter
     # Initialize skip_flutter_install flag
     skip_flutter_install=0
@@ -264,7 +266,7 @@ if [ "$OS" == "Linux" ]; then
         else
             echo "Flutter path already exists in .zshrc. Skipping update."
         fi
-
+    fi
 
     # Completion message
     echo -e "\e[32mSetup completed! Restart your terminal or log in again to start using zsh with oh-my-zsh.\e[0m"
