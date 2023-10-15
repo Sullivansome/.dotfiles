@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 # OS-specific configurations
 OS="$(uname)"
 
@@ -183,6 +184,8 @@ if [ "$OS" == "Linux" ]; then
         linux_section_start=$(grep -n '^\[\[ "$(uname)" == "Linux" \]\];$' "$zshrc" | cut -d: -f1)
         next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
 
+        echo "Value of linux_section_start: $linux_section_start"
+
         if [[ -z $next_section_start ]]; then
             next_section_start=$(wc -l < "$zshrc")
             next_section_start=$((next_section_start+1))
@@ -203,7 +206,7 @@ if [ "$OS" == "Linux" ]; then
         echo "Updated .zshrc with the new JAVA_HOME and PATH."
 
     fi
-    
+
     # Prompt before installing flutter
     # Initialize skip_flutter_install flag
     skip_flutter_install=0
@@ -289,3 +292,5 @@ elif [ "$OS" == "Darwin" ]; then
 else
     echo "Unknown OS! \n Installation abort!"
 fi
+set +x
+# Set -x: This command will print every command the shell executes. This can be very useful for seeing exactly what your script is doing. Add set -x at the start of your script and set +x at the end to turn it off.
