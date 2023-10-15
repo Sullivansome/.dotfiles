@@ -4,9 +4,15 @@
 OS="$(uname)"
 
 if [ "$OS" == "Linux" ]; then
-    echo "Setting up Linux specific configurations..."
+    # Ensure we're running as root
+    if [[ "$EUID" -ne 0 ]]; then
+        echo "Please run this script as root."
+        exit
+    fi
 
-    # Get confirmation from the user before starting
+    echo -e "\e[34mSetting up Linux specific configurations...\e[0m"
+
+    # Confirmation from user
     read -p "This script will install various packages and set up your Linux environment. Do you wish to continue? (yes/no): " confirm
     case $confirm in
         [Yy]* ) echo "Starting the setup...";;
@@ -17,23 +23,23 @@ if [ "$OS" == "Linux" ]; then
     counter=1
 
     # Update package lists and upgrade
-    echo "$counter. Updating package lists and updating..."
-    sudo apt update && sudo apt upgrade -y
+    echo -e "\e[33m$counter. Updating package lists and updating...\e[0m"
+    sudo apt update && sudo apt upgrade -y || { echo "Failed to update packages. Exiting."; exit 1; }
     ((counter++))
 
-    # Install packages: curl, wget, jq, git, zsh
-    echo "$counter. Installing curl, wget, jq, git, and zsh..."
-    sudo apt install -y curl wget jq git zsh
+    # Install essential packages
+    echo -e "\e[33m$counter. Installing curl, wget, jq, git, and zsh...\e[0m"
+    sudo apt install -y curl wget jq git zsh || { echo "Failed to install required packages. Exiting."; exit 1; }
     ((counter++))
 
-    # Change the default shell to zsh
-    echo "$counter. Changing the default shell to zsh..."
+    # Change default shell to zsh
+    echo -e "\e[33m$counter. Changing the default shell to zsh...\e[0m"
     chsh -s $(which zsh)
     ((counter++))
 
     # Install oh-my-zsh
     echo "$counter. Installing oh-my-zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
     ((counter++))
 
     # Install zsh extensions
@@ -56,6 +62,17 @@ if [ "$OS" == "Linux" ]; then
     ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
     ((counter++))
 
+    # Prompt before installing openjdk
+    while true; do
+        read -p "Would you like to install OpenJDK? (yes/no): " confirm_jdk
+        case $confirm_jdk in
+            [Yy]* ) break;;
+            [Nn]* ) echo "Skipping OpenJDK installation."; continue 2;;
+            * ) echo "Invalid choice. Please answer with yes or no.";;
+        esac
+    done
+
+    # ... [Continue with operations like installing openjdk]
     echo "$counter. Installing openjdk..."
 
     # Creat download folder in the home directory if not exist
@@ -105,6 +122,11 @@ if [ "$OS" == "Linux" ]; then
     wget "$download_link" -O "$download_dest"
     echo "Downloaded OpenJDK $latest_version to $download_dest."
 
+    if [ ! -f "$HOME/downloads/openjdk21.tar.gz" ] || [ ! -s "$HOME/downloads/openjdk21.tar.gz" ]; then
+    echo "Error: Failed to download OpenJDK."
+    exit 1
+    fi
+
     # Check for the 'dev' directory in the home directory and create if it doesn't exist
     dev_dir="$HOME/dev"
     if [ ! -d "$dev_dir" ]; then
@@ -150,31 +172,45 @@ if [ "$OS" == "Linux" ]; then
     ((counter++))
     echo "Updated .zshrc with the new JAVA_HOME and PATH."
 
+    # Prompt before installing flutter
+    while true; do
+        read -p "Would you like to install Flutter? (yes/no): " confirm_flutter
+        case $confirm_flutter in
+            [Yy]* ) break;;
+            [Nn]* ) echo "Skipping Flutter installation."; continue 2;;
+            * ) echo "Invalid choice. Please answer with yes or no.";;
+        esac
+    done
+
+    # ... [Continue with operations like installing flutter]
     # Install Flutter
     echo "$counter. Installing Flutter..."
+
     # Define directories
     downloads_dir="$HOME/downloads"
     dev_dir="$HOME/dev"
+    zshrc="$HOME/.zshrc"
+
+    # Check if the directories exist, if not, create them
+    [ -d "$downloads_dir" ] || mkdir "$downloads_dir"
+    [ -d "$dev_dir" ] || mkdir "$dev_dir"
 
     # Fetch the latest release details from Flutter's releases JSON
-    LATEST_RELEASE_JSON=$(curl -s "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json" | jq -r '.current_release.stable')
-    LATEST_RELEASE_DETAILS=$(curl -s "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json" | jq -r ".releases[] | select(.hash == \"$LATEST_RELEASE_JSON\")")
+    LATEST_RELEASE_JSON_DATA=$(curl -s "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json")
+    LATEST_RELEASE_HASH=$(echo "$LATEST_RELEASE_JSON_DATA" | jq -r '.current_release.stable')
+    LATEST_RELEASE_DETAILS=$(echo "$LATEST_RELEASE_JSON_DATA" | jq -r ".releases[] | select(.hash == \"$LATEST_RELEASE_HASH\")")
 
     # Extract the archive URL from the details
     FLUTTER_ARCHIVE_URL=$(echo "$LATEST_RELEASE_DETAILS" | jq -r '.archive')
     echo "$FLUTTER_ARCHIVE_URL"
-    # Check if ~/downloads exists, if not, create it
-    [ -d "$HOME/downloads" ] || mkdir "$HOME/downloads"
 
     # Download the Flutter archive
-    wget "$FLUTTER_ARCHIVE_URL" -O "$HOME/downloads/flutter.tar.xz"
+    wget "$FLUTTER_ARCHIVE_URL" -O "$downloads_dir/flutter.tar.xz"
 
     # Extract to desired location
-    [ -d "$HOME/dev" ] || mkdir "$HOME/dev"
-    tar -xvf "$HOME/downloads/flutter.tar.xz" -C "$HOME/dev"
+    tar -xvf "$downloads_dir/flutter.tar.xz" -C "$dev_dir"
 
     # Update the PATH in .zshrc if it doesn't already contain the Flutter bin directory
-    zshrc="$HOME/.zshrc"
     if ! grep -q "$dev_dir/flutter/bin" "$zshrc"; then
         echo "Updating PATH in .zshrc..."
         echo "# Flutter SDK" >> "$zshrc"
@@ -183,33 +219,11 @@ if [ "$OS" == "Linux" ]; then
         echo "Flutter path already exists in .zshrc. Skipping update."
     fi
 
-    # Source the .zshrc file
-    # echo "Sourcing .zshrc to reflect changes..."
-    # source "$zshrc"
-    # echo ".zshrc has been sourced."
 
-    # Check Flutter installation
-    # flutter doctor
-
-
-
-
-    echo "Setup completed! Restart your terminal or log in again to start using zsh with oh-my-zsh."
-    # Source the .zshrc file
+    # Completion message
+    echo -e "\e[32mSetup completed! Restart your terminal or log in again to start using zsh with oh-my-zsh.\e[0m"
     source "~/.zshrc"
-    echo ".zshrc has been sourced."
-    # Relaod zsh
     exec zsh
-
-    
-
-    # You might want to install OpenJDK or any other necessary packages specific for Linux here
-    # e.g., sudo apt install openjdk-XX-jdk
-
-    # Considering pipx related comment in .zshrc, you may want to install pipx and its related tools
-    # e.g., pip install pipx
-
-    # For Flutter, download and setup Flutter SDK for Linux.
 
 elif [ "$OS" == "Darwin" ]; then
     echo "Setting up macOS specific configurations..."
