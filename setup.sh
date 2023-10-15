@@ -1,40 +1,108 @@
 #!/bin/bash
 
-set -x
-# OS-specific configurations
+# 1. Detect the OS
 OS="$(uname)"
 
+# Function for Linux Menu
+linux_menu() {
+    echo "Choose an action for Linux:"
+    echo "1) Update package lists and upgrade"
+    echo "2) Install essential packages"
+    echo "3) Pull dotfiles from Github and apply changes"
+    echo "4) Install oh-my-zsh"
+    echo "5) Install zsh extensions and powerlevel10k"
+    echo "6) Install OpenJDK"
+    echo "7) Install Flutter"
+    echo "8) Exit"
+}
+
+# Function for macOS Menu (example, since the macOS part of your script is truncated)
+macos_menu() {
+    echo "Choose an action for macOS:"
+    echo "1) Install Homebrew"
+    # Add more macOS-specific actions here...
+    echo "2) Exit"
+}
+
+# Main execution starts here
+clear
 if [ "$OS" == "Linux" ]; then
+    while true; do
+        read -p "Enter choice [0-7]: " choice
 
-    echo -e "\e[34mSetting up Linux specific configurations...\e[0m"
+        case $choice in
+            1) update_packages ;;
+            2) install_essentials ;;
+            3) setup_dotfiles ;;
+            4) install_oh_my_zsh ;;
+            5) install_openjdk ;;
+            6) install_flutter ;;
+            0) echo "Goodbye!"; break ;;
+            *) echo "Invalid choice. Please choose between 1-7." ;;
+        esac
 
-    # Confirmation from user
-    read -p "This script will install various packages and set up your Linux environment. Do you wish to continue? (yes/no): " confirm
-    case $confirm in
-        [Yy]* ) echo "Starting the setup...";;
-        [Nn]* ) echo "Exiting setup."; exit 1;;
-        * ) echo "Invalid choice. Exiting setup."; exit 1;;
-    esac
+        echo ""
+        echo "Choose next action:"
+        echo "1) Update packages"
+        echo "2) Install essential packages"
+        echo "3) Setup dotfiles"
+        echo "4) Install Oh My Zsh"
+        echo "5) Install OpenJDK"
+        echo "6) Install Flutter"
+        echo "0) Exit"
+    done
 
-    counter=1
+elif [ "$OS" == "Darwin" ]; then
+    while true; do
+        macos_menu
+        read -p "Enter your choice: " choice
+        case $choice in
+            1) 
+                # Install Homebrew
+                # ... 
+                ;;
+            # ... Handle other macOS-specific options in a similar way
+            2) 
+                echo "Exiting..."
+                break
+                ;;
+            *)
+                echo "Invalid choice!"
+                ;;
+        esac
+    done
 
-    # Update package lists and upgrade
-    echo -e "\e[33m$counter. Updating package lists and updating...\e[0m"
+else
+    echo "OS not recognized!"
+fi
+
+function update_packages() {
+    echo -e "\e[33mUpdating package lists and updating...\e[0m"
     sudo apt update && sudo apt upgrade -y || { echo "Failed to update packages. Exiting."; exit 1; }
-    ((counter++))
+}
 
-    # Install essential packages
-    echo -e "\e[33m$counter. Installing curl, wget, jq, git, vim, and zsh...\e[0m"
+function install_essentials() {
+    echo -e "\e[33mInstalling curl, wget, jq, git, vim, and zsh...\e[0m"
     sudo apt install -y curl wget jq git vim zsh || { echo "Failed to install required packages. Exiting."; exit 1; }
-    ((counter++))
+}
+
+function setup_dotfiles() {
+    set -e  # stop the script if any command returns a non-zero exit code
 
     # Pull dotfiles from Github and apply changes
-    echo "$counter. Pulling dotfiles from Github..."
+    echo "Pulling dotfiles from Github..."
+
     # Variables
     REPO_URL="https://github.com/Sullivansome/dotfiles.git"
     DEST_DIR="$HOME/.dotfiles"
 
-    cd
+    # Check if git is installed
+    if ! command -v git &> /dev/null; then
+        echo "Error: git is not installed. Please install git and try again."
+        return 1
+    fi
+
+    cd  # Move to the home directory
 
     if [ -d "$DEST_DIR" ]; then
         echo "Backing up dotfiles..."
@@ -58,207 +126,204 @@ if [ "$OS" == "Linux" ]; then
     fi
 
     # Clone the repo
+    echo "Cloning the dotfiles repository..."
     mkdir -p "$DEST_DIR"
     git clone "$REPO_URL" "$DEST_DIR"
 
-    cd 
     # System links
+    echo "Creating symbolic links..."
+    [[ -L ~/.zshrc ]] && rm ~/.zshrc
     ln -s ~/.dotfiles/.zshrc ~/.zshrc
+
+    [[ -L ~/.gitconfig ]] && rm ~/.gitconfig
     ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
+
+    [[ -L ~/.p10k.zsh ]] && rm ~/.p10k.zsh
     ln -s ~/.dotfiles/.p10k.zsh ~/.p10k.zsh
-    ((counter++))
 
+    echo "Dotfiles setup complete!"
+}
 
-    # Install oh-my-zsh
-    echo "$counter. Installing oh-my-zsh..."
-    sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-    ((counter++))
-
-    # Install zsh extensions and powerlevel10k
-    echo "$counter. Installing zsh-extensions: auto-suggestions, syntax-highlighting..."
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
-
-    ((counter++))
-
-    chmod 777 ~/.zshrc
-    # Prompt before installing openjdk
-    skip_openJDK_install=0
-    while true; do
-        read -p "Would you like to install OpenJDK? (yes/no): " confirm_jdk
-        case $confirm_jdk in
-            [Yy]* ) break;;
-            [Nn]* ) echo "Skipping OpenJDK installation."; skip_openJDK_install=1; break;;
-            * ) echo "Invalid choice. Please answer with yes or no.";;
-        esac
-    done
-
-    if [ $skip_openJDK_install -eq 0 ]; then
-        cd 
-        # ... [Continue with operations like installing openjdk]
-        echo "$counter. Installing openjdk..."
-
-        # Creat download folder in the home directory if not exist
-        cd 
-        downloads_dir="$HOME/downloads"
-        if [ ! -d "$downloads_dir" ]; then
-            echo "Creating the Downloads folder..."
-            mkdir "$downloads_dir"
-            echo "Downloads folder created."
-        else
-            echo "The Downloads folder already exists."
-        fi
-
-        # Fetch and prompt for openjdk installation
-        page_content=$(curl -s https://jdk.java.net/)
-        latest_version=$(echo "$page_content" | grep -Eo 'Ready for use: <a href="\/[0-9]+' | grep -Eo '[0-9]+' | sort -nr | head -1)
-
-        while true; do
-            read -p "The latest JDK version ready for use is $latest_version. Is this version satisfying? (yes/no) " answer
-
-            case $answer in
-                [Yy]* ) 
-                    echo "Thank you for the confirmation."
-                    break;;
-                [Nn]* ) 
-                    echo "Okay, please check the website for other versions."
-                    break;;
-                * ) 
-                    echo "Invalid answer. Please enter yes or no.";;
-            esac
-        done
-
-        # Fetch the version-specific page content (assuming the content structure you've provided)
-        version_content=$(curl -s https://jdk.java.net/$latest_version/)
-
-        # Extract the OpenJDK download link for the latest version (based on our earlier regex)
-        download_link=$(echo "$version_content" | grep -Eo "https://download\.java\.net/java/GA/jdk$latest_version/[^\"_]+_linux-x64_bin\.tar\.gz" | head -1)
-
-        echo "Download link is: $download_link"
-
-        # Download the JDK into the Downloads folder
-        download_dest="$downloads_dir/openjdk$latest_version.tar.gz"
-        wget "$download_link" -O "$download_dest"
-        echo "Downloaded OpenJDK $latest_version to $download_dest."
-
-        if [ ! -f "$HOME/downloads/openjdk$latest_version.tar.gz" ] || [ ! -s "$HOME/downloads/openjdk$latest_version.tar.gz" ]; then
-        echo "Error: Failed to download OpenJDK."
-        exit 1
-        fi
-
-        # Check for the 'dev' directory in the home directory and create if it doesn't exist
-        dev_dir="$HOME/dev"
-        if [ ! -d "$dev_dir" ]; then
-            echo "Creating the 'dev' directory in the home directory..."
-            mkdir "$dev_dir"
-            echo "'dev' directory created."
-        else
-            echo "The 'dev' directory already exists in the home directory."
-        fi
-
-        # Unzip the downloaded file into the 'dev' directory
-        tar -xzvf "$download_dest" -C "$dev_dir"
-        echo "OpenJDK $latest_version unzipped to $dev_dir."
-
-        # You can optionally remove the downloaded tar.gz file after extraction if you want
-        # rm "$download_dest"
-
-        # Determine the extracted folder name (assuming the structure is consistent and it begins with 'jdk')
-        jdk_folder=$(ls "$dev_dir" | grep -E "^jdk" | head -1)
-        if [ -z "$jdk_folder" ]; then
-            echo "Error: Couldn't determine the extracted JDK folder."
-            exit 1
-        fi
-
-        # Update the .zshrc file
-        zshrc="$HOME/.zshrc"
-
-        # Backup the .zshrc file
-        backup_dir="$HOME/.dotfiles_backup"
-        backup_file="$backup_dir/$(basename $zshrc).backup_$(date +%Y%m%d_%H%M%S)"
-        # Ensure the backup directory exists
-        mkdir -p "$backup_dir"
-        cp "$zshrc" "$backup_file"
-        echo ".zshrc backed up to: $backup_file"
-
-        # Check if openJDK's path exists in .zshrc. If not, add it to the Linux section.
-        linux_section_start=$(grep -n 'elif \[\[ "$(uname)" == "Linux" \]\];' ~/.zshrc | cut -d: -f1)
-        next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
-
-        if [[ -z $next_section_start ]]; then
-            next_section_start=$(wc -l < "$zshrc")
-            next_section_start=$((next_section_start+1))
-        fi
-
-        if ! grep -q "export JAVA_HOME=" "$zshrc"; then
-            sed -i "${linux_section_start},${next_section_start}a\\# Java sdk\nexport JAVA_HOME=$dev_dir/$jdk_folder\nexport PATH=\$JAVA_HOME/bin:\$PATH\n" "$zshrc"
-        else
-            # Print the exact paths for debugging
-            new_java_home="$dev_dir/$jdk_folder"
-            echo "Setting JAVA_HOME to: $new_java_home"
-            echo "Setting PATH to: $new_java_home/bin:$PATH"
-
-            # Replace existing JAVA_HOME and PATH assignments
-            sed -i "${linux_section_start},${next_section_start}s|export JAVA_HOME=.*|export JAVA_HOME=$new_java_home|" "$zshrc"
-            sed -i "${linux_section_start},${next_section_start}s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
-        fi
-        echo "Updated .zshrc with the new JAVA_HOME and PATH."        
-
+install_oh_my_zsh() {
+    # Check if oh-my-zsh is already installed
+    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+        # Install oh-my-zsh
+        echo "Installing oh-my-zsh..."
+        sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)" || {
+            echo "Error installing oh-my-zsh!"
+            return 1
+        }
+    else
+        echo "oh-my-zsh is already installed."
     fi
 
-    # Prompt before installing flutter
-    # Initialize skip_flutter_install flag
-    skip_flutter_install=0
+    # Install zsh-extensions: auto-suggestions, if not already present
+    if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
+        echo "Installing zsh-autosuggestions..."
+        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions || {
+            echo "Error installing zsh-autosuggestions!"
+            return 1
+        }
+    else
+        echo "zsh-autosuggestions is already installed."
+    fi
+
+    # Install zsh-syntax-highlighting, if not already present
+    if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]; then
+        echo "Installing zsh-syntax-highlighting..."
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting || {
+            echo "Error installing zsh-syntax-highlighting!"
+            return 1
+        }
+    else
+        echo "zsh-syntax-highlighting is already installed."
+    fi
+
+    # Install powerlevel10k theme, if not already present
+    if [ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
+        echo "Installing powerlevel10k..."
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k || {
+            echo "Error installing powerlevel10k!"
+            return 1
+        }
+    else
+        echo "powerlevel10k is already installed."
+    fi
+}
+
+function install_openjdk() {
+    cd ~
+
+    echo "Preparing for OpenJDK installation..."
+
+    # Ensure download directory exists
+    downloads_dir="$HOME/downloads"
+    if [ ! -d "$downloads_dir" ]; then
+        echo "Creating the Downloads folder..."
+        mkdir "$downloads_dir"
+        echo "Downloads folder created."
+    else
+        echo "The Downloads folder already exists."
+    fi
+
+    # Fetch latest OpenJDK version
+    page_content=$(curl -s https://jdk.java.net/)
+    latest_version=$(echo "$page_content" | grep -Eo 'Ready for use: <a href="\/[0-9]+' | grep -Eo '[0-9]+' | sort -nr | head -1)
+
     while true; do
-        read -p "Would you like to install Flutter? (yes/no): " confirm_flutter
-        case $confirm_flutter in
-            [Yy]* ) break;;
-            [Nn]* ) echo "Skipping Flutter installation."; skip_flutter_install=1; break;;
-            * ) echo "Invalid choice. Please answer with yes or no.";;
+        read -p "The latest JDK version ready for use is $latest_version. Is this version satisfying? (yes/no) " answer
+        case $answer in
+            [Yy]* ) 
+                echo "Thank you for the confirmation."
+                break;;
+            [Nn]* ) 
+                echo "Okay, please check the website for other versions."
+                return;;
+            * ) 
+                echo "Invalid answer. Please enter yes or no.";;
         esac
     done
 
-    # ... [Continue with operations like installing flutter]
-    if [ $skip_flutter_install -eq 0 ]; then
-        cd
-        # Install Flutter
-        echo "$counter. Installing Flutter..."
+    # Extract OpenJDK download link for the latest version
+    version_content=$(curl -s https://jdk.java.net/"$latest_version"/)
+    download_link=$(echo "$version_content" | grep -Eo "https://download\.java\.net/java/GA/jdk$latest_version/[^\"_]+_linux-x64_bin\.tar\.gz" | head -1)
 
-        # Define directories
-        downloads_dir="$HOME/downloads"
-        dev_dir="$HOME/dev"
-        zshrc="$HOME/.zshrc"
+    # Download the JDK
+    download_dest="$downloads_dir/openjdk$latest_version.tar.gz"
+    wget "$download_link" -O "$download_dest"
+    echo "Downloaded OpenJDK $latest_version to $download_dest."
 
-        # Check if the directories exist, if not, create them
-        [ -d "$downloads_dir" ] || mkdir "$downloads_dir"
-        [ -d "$dev_dir" ] || mkdir "$dev_dir"
+    # Verify download
+    if [ ! -f "$download_dest" ] || [ ! -s "$download_dest" ]; then
+        echo "Error: Failed to download OpenJDK."
+        return 1
+    fi
 
+    # Ensure 'dev' directory exists
+    dev_dir="$HOME/dev"
+    if [ ! -d "$dev_dir" ]; then
+        echo "Creating the 'dev' directory..."
+        mkdir "$dev_dir"
+        echo "'dev' directory created."
+    else
+        echo "The 'dev' directory already exists."
+    fi
+
+    # Unzip OpenJDK
+    tar -xzvf "$download_dest" -C "$dev_dir"
+    echo "OpenJDK $latest_version unzipped to $dev_dir."
+
+    # Determine extracted JDK directory
+    jdk_folder=$(ls "$dev_dir" | grep -E "^jdk" | head -1)
+    if [ -z "$jdk_folder" ]; then
+        echo "Error: Couldn't determine the extracted JDK folder."
+        return 1
+    fi
+
+    # Update the .zshrc file
+    zshrc="$HOME/.zshrc"
+    backup_dir="$HOME/.dotfiles_backup"
+    backup_file="$backup_dir/$(basename "$zshrc").backup_$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$backup_dir"
+    cp "$zshrc" "$backup_file"
+    echo ".zshrc backed up to: $backup_file"
+
+    # Update .zshrc with JAVA_HOME and PATH, ensuring not to duplicate
+    linux_section_start=$(grep -n 'elif \[\[ "$(uname)" == "Linux" \]\];' "$zshrc" | cut -d: -f1)
+    next_section_start=$(awk -v start="$linux_section_start" 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
+    next_section_start=${next_section_start:-$(wc -l < "$zshrc")}
+    new_java_home="$dev_dir/$jdk_folder"
+
+    if ! grep -q "export JAVA_HOME=" "$zshrc"; then
+        sed -i "${linux_section_start},${next_section_start}a\\# Java sdk\nexport JAVA_HOME=$new_java_home\nexport PATH=\$JAVA_HOME/bin:\$PATH\n" "$zshrc"
+    else
+        sed -i "${linux_section_start},${next_section_start}s|export JAVA_HOME=.*|export JAVA_HOME=$new_java_home|" "$zshrc"
+        sed -i "${linux_section_start},${next_section_start}s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
+    fi
+    echo "Updated .zshrc with the new JAVA_HOME and PATH."
+}
+
+install_flutter() {
+    echo "Installing Flutter..."
+
+    # Define directories
+    local downloads_dir="$HOME/downloads"
+    local dev_dir="$HOME/dev"
+    local zshrc="$HOME/.zshrc"
+
+    # Check if the directories exist, if not, create them
+    mkdir -p "$downloads_dir" "$dev_dir"
+
+    download_and_extract_flutter
+    update_zshrc_for_flutter
+
+    # Download and extract the latest Flutter release
+    download_and_extract_flutter() {
         # Fetch the latest release details from Flutter's releases JSON
-        LATEST_RELEASE_JSON_DATA=$(curl -s "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json")
-        LATEST_RELEASE_HASH=$(echo "$LATEST_RELEASE_JSON_DATA" | jq -r '.current_release.stable')
-        LATEST_RELEASE_DETAILS=$(echo "$LATEST_RELEASE_JSON_DATA" | jq -r ".releases[] | select(.hash == \"$LATEST_RELEASE_HASH\")")
-
-        # Extract the archive URL from the details
-        FLUTTER_ARCHIVE_URL=$(echo "$LATEST_RELEASE_DETAILS" | jq -r '.archive')
-        echo "$FLUTTER_ARCHIVE_URL"
-
+        local latest_release_data
+        latest_release_data=$(curl -s "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json")
+        
+        # Extract relevant release details
+        local latest_release_hash
+        latest_release_hash=$(echo "$latest_release_data" | jq -r '.current_release.stable')
+        local archive_url
+        archive_url=$(echo "$latest_release_data" | jq -r ".releases[] | select(.hash == \"$latest_release_hash\") .archive")
+        
         # Download the Flutter archive
-        wget "$FLUTTER_ARCHIVE_URL" -O "$downloads_dir/flutter.tar.xz"
+        echo "Downloading Flutter from $archive_url..."
+        wget "$archive_url" -O "$downloads_dir/flutter.tar.xz"
 
         # Extract to desired location
         tar -xvf "$downloads_dir/flutter.tar.xz" -C "$dev_dir"
+    }
 
-        # Back up
-        backup_dir="$HOME/.dotfiles_backup"
-        backup_file="$backup_dir/$(basename $zshrc).backup_$(date +%Y%m%d_%H%M%S)"
-        # Ensure the backup directory exists
-        mkdir -p "$backup_dir"
-
-        # Check if Flutter's path exists in .zshrc. If not, add it to the Linux section.
+    # Update the PATH in .zshrc to include Flutter's bin directory
+    update_zshrc_for_flutter() {
+        local linux_section_start
         linux_section_start=$(grep -n 'elif \[\[ "$(uname)" == "Linux" \]\];' ~/.zshrc | cut -d: -f1)
+        local next_section_start
         next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
-
+        
         if [[ -z $next_section_start ]]; then
             next_section_start=$(wc -l < "$zshrc")
             next_section_start=$((next_section_start+1))
@@ -270,12 +335,18 @@ if [ "$OS" == "Linux" ]; then
         else
             echo "Flutter path already exists in .zshrc. Skipping update."
         fi
-    fi
+    }
+}
 
-    # Completion message
-    echo -e "\e[32mSetup completed! Restart your terminal or log in again to start using zsh with oh-my-zsh.\e[0m"
-    echo "source ~/.zshrc"
-    echo "exec zsh"
+
+echo "Choose an option to proceed:"
+echo "1) Update packages"
+echo "2) Install essential packages"
+echo "3) Setup dotfiles"
+echo "4) Install Oh My Zsh"
+echo "5) Install OpenJDK"
+echo "6) Install Flutter"
+echo "7) Exit"
 
 elif [ "$OS" == "Darwin" ]; then
     echo "Setting up macOS specific configurations..."
@@ -293,5 +364,5 @@ elif [ "$OS" == "Darwin" ]; then
 else
     echo "Unknown OS! \n Installation abort!"
 fi
-set +x
+
 # Set -x: This command will print every command the shell executes. This can be very useful for seeing exactly what your script is doing. Add set -x at the start of your script and set +x at the end to turn it off.
