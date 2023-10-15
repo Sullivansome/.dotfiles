@@ -179,11 +179,17 @@ if [ "$OS" == "Linux" ]; then
         cp "$zshrc" "$backup_file"
         echo ".zshrc backed up to: $backup_file"
 
-        # Check if JAVA_HOME export exists. If not, add it.
+        # Check if openJDK's path exists in .zshrc. If not, add it to the Linux section.
+        linux_section_start=$(grep -n '^\[\[ "$(uname)" == "Linux" \]\];$' "$zshrc" | cut -d: -f1)
+        next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
+
+        if [[ -z $next_section_start ]]; then
+            next_section_start=$(wc -l < "$zshrc")
+            next_section_start=$((next_section_start+1))
+        fi
+
         if ! grep -q "export JAVA_HOME=" "$zshrc"; then
-            echo "# Java sdk" >> "$zshrc"
-            echo "export JAVA_HOME=$dev_dir/$jdk_folder" >> "$zshrc"
-            echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> "$zshrc"
+            sed -i "${linux_section_start}a\\# Java sdk\nexport JAVA_HOME=$dev_dir/$jdk_folder\nexport PATH=\$JAVA_HOME/bin:\$PATH\n" "$zshrc"
         else
             # Print the exact paths for debugging
             new_java_home="$dev_dir/$jdk_folder"
@@ -194,9 +200,8 @@ if [ "$OS" == "Linux" ]; then
             sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$new_java_home|" "$zshrc"
             sed -i "s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
         fi
-        ((counter++))
         echo "Updated .zshrc with the new JAVA_HOME and PATH."
-    fi
+
     # Prompt before installing flutter
     # Initialize skip_flutter_install flag
     skip_flutter_install=0
@@ -243,15 +248,23 @@ if [ "$OS" == "Linux" ]; then
         backup_file="$backup_dir/$(basename $zshrc).backup_$(date +%Y%m%d_%H%M%S)"
         # Ensure the backup directory exists
         mkdir -p "$backup_dir"
-        # Update the PATH in .zshrc if it doesn't already contain the Flutter bin directory
+
+        # Check if Flutter's path exists in .zshrc. If not, add it to the Linux section.
+        linux_section_start=$(grep -n '^\[\[ "$(uname)" == "Linux" \]\];$' "$zshrc" | cut -d: -f1)
+        next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
+
+        if [[ -z $next_section_start ]]; then
+            next_section_start=$(wc -l < "$zshrc")
+            next_section_start=$((next_section_start+1))
+        fi
+
         if ! grep -q "$dev_dir/flutter/bin" "$zshrc"; then
             echo "Updating PATH in .zshrc..."
-            echo "# Flutter SDK" >> "$zshrc"
-            echo "export PATH=\$PATH:$dev_dir/flutter/bin" >> "$zshrc"
+            sed -i "${linux_section_start}a\\# Flutter SDK\nexport PATH=\$PATH:$dev_dir/flutter/bin\n" "$zshrc"
         else
             echo "Flutter path already exists in .zshrc. Skipping update."
         fi
-    fi
+
 
     # Completion message
     echo -e "\e[32mSetup completed! Restart your terminal or log in again to start using zsh with oh-my-zsh.\e[0m"

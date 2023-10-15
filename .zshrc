@@ -1,4 +1,3 @@
-
 # OS specified configurations start here
 if [[ "$(uname)" == "Darwin" ]]; then
 	# JAVA_HOME
