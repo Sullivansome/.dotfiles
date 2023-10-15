@@ -139,7 +139,7 @@ if [ "$OS" == "Linux" ]; then
         wget "$download_link" -O "$download_dest"
         echo "Downloaded OpenJDK $latest_version to $download_dest."
 
-        if [ ! -f "$HOME/downloads/openjdk21.tar.gz" ] || [ ! -s "$HOME/downloads/openjdk21.tar.gz" ]; then
+        if [ ! -f "$HOME/downloads/openjdk$latest_version.tar.gz" ] || [ ! -s "$HOME/downloads/openjdk$latest_version.tar.gz" ]; then
         echo "Error: Failed to download OpenJDK."
         exit 1
         fi
