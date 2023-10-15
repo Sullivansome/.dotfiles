@@ -109,11 +109,30 @@ if [ "$OS" == "Linux" ]; then
         esac
     done
 
+    # Fetch and prompt for openjdk installation
+    page_content=$(curl -s https://jdk.java.net/)
+    latest_version=$(echo "$page_content" | grep -Eo 'Ready for use: <a href="\/[0-9]+' | grep -Eo '[0-9]+' | sort -nr | head -1)
+
+    while true; do
+        read -p "The latest JDK version ready for use is $latest_version. Is this version satisfying? (yes/no) " answer
+
+        case $answer in
+            [Yy]* ) 
+                echo "Thank you for the confirmation."
+                break;;
+            [Nn]* ) 
+                echo "Okay, please check the website for other versions."
+                break;;
+            * ) 
+                echo "Invalid answer. Please enter yes or no.";;
+        esac
+    done
+
     # Fetch the version-specific page content (assuming the content structure you've provided)
     version_content=$(curl -s https://jdk.java.net/$latest_version/)
 
     # Extract the OpenJDK download link for the latest version (based on our earlier regex)
-    download_link=$(echo "$version_content" | grep -Eo "https://download\.java\.net/java/GA/jdk$latest_version/[^\"_]+_linux-x64_bin\.tar\.gz")
+    download_link=$(echo "$version_content" | grep -Eo "https://download\.java\.net/java/GA/jdk$latest_version/[^\"_]+_linux-x64_bin\.tar\.gz" | head -1)
 
     echo "Download link is: $download_link"
 
