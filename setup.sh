@@ -54,57 +54,33 @@ if [ "$OS" == "Linux" ]; then
     REPO_URL="https://github.com/Sullivansome/dotfiles.git"
     DEST_DIR="$HOME/.dotfiles"
 
-    # Check if the directory exists and remove it
     if [ -d "$DEST_DIR" ]; then
+        echo "$counter. Backing up dotfiles..."
+        backup_dir="$HOME/.dotfiles_backup"
+        # Ensure the backup directory exists
+        mkdir -p "$backup_dir"
+
+        # Backup .zshrc
+        if [ -f ~/.zshrc ]; then
+            backup_file="$backup_dir/.zshrc.backup_$(date +%Y%m%d_%H%M%S)"
+            mv ~/.zshrc $backup_file
+            echo "Backed up existing .zshrc to $backup_file"
+        fi
+        # Backup and .gitconfig
+        if [ -f ~/.gitconfig ]; then
+            backup_file="$backup_dir/.gitconfig.backup_$(date +%Y%m%d_%H%M%S)"
+            mv ~/.gitconfig $backup_file
+            echo "Backed up existing .gitconfig to $backup_file"
+        fi
         rm -rf "$DEST_DIR"
     fi
 
     # Clone the repo
     git clone "$REPO_URL" "$DEST_DIR"
-    ((counter++))
 
-    echo "$counter. Backing up and linking dotfiles..."
-
-    backup_dir="$HOME/.dotfiles_backup"
-    # Ensure the backup directory exists
-    mkdir -p "$backup_dir"
-
-    # Backup and link .zshrc
-    if [ -f ~/.zshrc ]; then
-        backup_file="$backup_dir/.zshrc.backup_$(date +%Y%m%d_%H%M%S)"
-        mv ~/.zshrc $backup_file
-        echo "Backed up existing .zshrc to $backup_file"
-    fi
+    # System links
     ln -sf ~/.dotfiles/.zshrc ~/.zshrc
-
-    # Backup and link .gitconfig
-    if [ -f ~/.gitconfig ]; then
-        backup_file="$backup_dir/.gitconfig.backup_$(date +%Y%m%d_%H%M%S)"
-        mv ~/.gitconfig $backup_file
-        echo "Backed up existing .gitconfig to $backup_file"
-    fi
-    ln -sf ~/.dotfiles/.gitconfig ~/.gitconfigecho "$counter. Backing up and linking dotfiles..."
-
-    backup_dir="$HOME/.dotfiles_backup"
-    # Ensure the backup directory exists
-    mkdir -p "$backup_dir"
-
-    # Backup and link .zshrc
-    if [ -f ~/.zshrc ]; then
-        backup_file="$backup_dir/.zshrc.backup_$(date +%Y%m%d_%H%M%S)"
-        mv ~/.zshrc $backup_file
-        echo "Backed up existing .zshrc to $backup_file"
-    fi
-    ln -sf ~/.dotfiles/.zshrc ~/.zshrc
-
-    # Backup and link .gitconfig
-    if [ -f ~/.gitconfig ]; then
-        backup_file="$backup_dir/.gitconfig.backup_$(date +%Y%m%d_%H%M%S)"
-        mv ~/.gitconfig $backup_file
-        echo "Backed up existing .gitconfig to $backup_file"
-    fi
     ln -sf ~/.dotfiles/.gitconfig ~/.gitconfig
-
     ((counter++))
 
     # Prompt before installing openjdk
@@ -118,7 +94,7 @@ if [ "$OS" == "Linux" ]; then
         esac
     done
 
-    if [ $skip_openJDK_install -eq 0]; then 
+    if [ $skip_openJDK_install -eq 0 ]; then 
         # ... [Continue with operations like installing openjdk]
         echo "$counter. Installing openjdk..."
 
