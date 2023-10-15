@@ -193,16 +193,27 @@ if [ "$OS" == "Linux" ]; then
     cp "$zshrc" "$backup_file"
     echo ".zshrc backed up to: $backup_file"
 
+    # Assuming $dev_dir and $jdk_folder are set and valid
+
+    JAVA_PATH="$dev_dir/$jdk_folder"
+
     # Check if JAVA_HOME export exists. If not, add it.
     if ! grep -q "export JAVA_HOME=" "$zshrc"; then
         echo "# Java sdk" >> "$zshrc"
-        echo "export JAVA_HOME=$dev_dir/$jdk_folder" >> "$zshrc"
+        echo "export JAVA_HOME=$JAVA_PATH" >> "$zshrc"
         echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> "$zshrc"
     else
-        # Replace existing JAVA_HOME and PATH assignments
-        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$dev_dir/$jdk_folder|" "$zshrc"
-        sed -i "s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
+        # Replace existing JAVA_HOME
+        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$JAVA_PATH|" "$zshrc"
+
+        # If the PATH with JAVA_HOME exists, replace, else append.
+        if grep -q "export PATH=\$JAVA_HOME/bin:" "$zshrc"; then
+            sed -i "s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
+        else
+            echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> "$zshrc"
+        fi
     fi
+
     ((counter++))
     echo "Updated .zshrc with the new JAVA_HOME and PATH."
 
