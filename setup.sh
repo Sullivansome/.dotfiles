@@ -27,6 +27,7 @@ macos_menu() {
 # Main execution starts here
 clear
 if [ "$OS" == "Linux" ]; then
+    linux_menu
     while true; do
         read -p "Enter choice [0-7]: " choice
 
