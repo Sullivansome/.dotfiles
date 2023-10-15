@@ -61,6 +61,7 @@ if [ "$OS" == "Linux" ]; then
     mkdir -p "$DEST_DIR"
     git clone "$REPO_URL" "$DEST_DIR"
 
+    cd 
     # System links
     ln -s ~/.dotfiles/.zshrc ~/.zshrc
     ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
@@ -81,7 +82,7 @@ if [ "$OS" == "Linux" ]; then
 
     ((counter++))
 
-
+    chmod 777 ~/.zshrc
     # Prompt before installing openjdk
     skip_openJDK_install=0
     while true; do
@@ -93,7 +94,8 @@ if [ "$OS" == "Linux" ]; then
         esac
     done
 
-    if [ $skip_openJDK_install -eq 0 ]; then 
+    if [ $skip_openJDK_install -eq 0 ]; then
+        cd 
         # ... [Continue with operations like installing openjdk]
         echo "$counter. Installing openjdk..."
 
@@ -222,6 +224,7 @@ if [ "$OS" == "Linux" ]; then
 
     # ... [Continue with operations like installing flutter]
     if [ $skip_flutter_install -eq 0 ]; then
+        cd
         # Install Flutter
         echo "$counter. Installing Flutter..."
 
