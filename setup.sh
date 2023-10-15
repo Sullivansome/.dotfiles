@@ -186,16 +186,13 @@ if [ "$OS" == "Linux" ]; then
         linux_section_start=$(grep -n 'elif \[\[ "$(uname)" == "Linux" \]\];' ~/.zshrc | cut -d: -f1)
         next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
 
-        echo "Value of linux_section_start: $linux_section_start"
-        echo "Value of next_section_start: $next_section_start"
-
         if [[ -z $next_section_start ]]; then
             next_section_start=$(wc -l < "$zshrc")
             next_section_start=$((next_section_start+1))
         fi
 
         if ! grep -q "export JAVA_HOME=" "$zshrc"; then
-            sed -i "${linux_section_start}a\\# Java sdk\nexport JAVA_HOME=$dev_dir/$jdk_folder\nexport PATH=\$JAVA_HOME/bin:\$PATH\n" "$zshrc"
+            sed -i "${linux_section_start},${next_section_start}a\\# Java sdk\nexport JAVA_HOME=$dev_dir/$jdk_folder\nexport PATH=\$JAVA_HOME/bin:\$PATH\n" "$zshrc"
         else
             # Print the exact paths for debugging
             new_java_home="$dev_dir/$jdk_folder"
@@ -203,10 +200,10 @@ if [ "$OS" == "Linux" ]; then
             echo "Setting PATH to: $new_java_home/bin:$PATH"
 
             # Replace existing JAVA_HOME and PATH assignments
-            sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$new_java_home|" "$zshrc"
-            sed -i "s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
+            sed -i "${linux_section_start},${next_section_start}s|export JAVA_HOME=.*|export JAVA_HOME=$new_java_home|" "$zshrc"
+            sed -i "${linux_section_start},${next_section_start}s|export PATH=\$JAVA_HOME/bin:.*|export PATH=\$JAVA_HOME/bin:\$PATH|" "$zshrc"
         fi
-        echo "Updated .zshrc with the new JAVA_HOME and PATH."
+        echo "Updated .zshrc with the new JAVA_HOME and PATH."        
 
     fi
 
