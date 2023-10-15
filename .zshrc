@@ -21,15 +21,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	eval "$(/opt/homebrew/bin/brew shellenv)"
 
 elif [[ "$(uname)" == "Linux" ]]; then
-	# Java sdk
-	export JAVA_HOME=~/dev/jdk-20.0.1
-	export PATH= "$JAVA_HOME/bin:$PATH"
 
-	# Created by `pipx` on 2023-07-16 08:00:13
-	export PATH="$PATH:/home/kevin/.local/bin"
-
-	# Flutter
-	export PATH="$PATH:~/dev/flutter/bin"
 
 else
 	echo 'Unknown OS!'
