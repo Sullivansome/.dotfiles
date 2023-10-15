@@ -20,7 +20,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	eval "$(/opt/homebrew/bin/brew shellenv)"
 
 elif [[ "$(uname)" == "Linux" ]]; then
-
+	# Placeholder for Linux specific configurations
 
 else
 	echo 'Unknown OS!'

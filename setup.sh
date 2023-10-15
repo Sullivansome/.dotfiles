@@ -185,6 +185,7 @@ if [ "$OS" == "Linux" ]; then
         next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
 
         echo "Value of linux_section_start: $linux_section_start"
+        echo "Value of next_section_start: $next_section_start"
 
         if [[ -z $next_section_start ]]; then
             next_section_start=$(wc -l < "$zshrc")
