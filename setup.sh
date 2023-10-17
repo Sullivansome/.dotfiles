@@ -37,7 +37,7 @@ function setup_dotfiles() {
     DEST_DIR="$HOME/.dotfiles"
 
     # Prompt user for repo URL
-    echo -n "Enter your .dotfiles repo URL, REMEMBER TO COPY THE SETUP>SH TO YOUR REPO [default: $REPO_URL]: "
+    echo -n "Enter your .dotfiles repo URL, REMEMBER TO COPY THE SETUP.SH TO YOUR REPO[default: $REPO_URL]: "
     read user_input
 
     # If user_input is not empty, update REPO_URL
@@ -262,30 +262,39 @@ install_flutter() {
 
     # Download and extract the latest Flutter release
     download_and_extract_flutter() {
+        # Base URL for downloading Flutter releases
+        local base_url="https://storage.googleapis.com/flutter_infra_release/releases"
+        
         # Fetch the latest release details from Flutter's releases JSON
         local latest_release_data
-        latest_release_data=$(curl -s "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json")
+        latest_release_data=$(curl -s "$base_url/releases_linux.json")
         
-        # Extract relevant release details
+        # Extract the hash of the latest stable release
         local latest_release_hash
         latest_release_hash=$(echo "$latest_release_data" | jq -r '.current_release.stable')
+        
+        # Extract the relative archive URL and prepend with base URL to form the full URL
         local archive_url
         archive_url=$(echo "$latest_release_data" | jq -r ".releases[] | select(.hash == \"$latest_release_hash\") .archive")
+        archive_url="$base_url/$archive_url"
         
         # Download the Flutter archive
         echo "Downloading Flutter from $archive_url..."
         wget "$archive_url" -O "$downloads_dir/flutter.tar.xz"
-
-        # Extract to desired location
+        
+        # Extract the archive to the desired directory
         tar -xvf "$downloads_dir/flutter.tar.xz" -C "$dev_dir"
     }
+
 
     # Update the PATH in .zshrc to include Flutter's bin directory
     update_zshrc_for_flutter() {
         local linux_section_start
         linux_section_start=$(grep -n 'elif \[\[ "$(uname)" == "Linux" \]\];' ~/.zshrc | cut -d: -f1)
         local next_section_start
-        next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^\[\[.*\]\];$/ {print NR; exit}' "$zshrc")
+        next_section_start=$(awk -v start=$linux_section_start 'NR > start && /^else$/ {print NR; exit}' "$zshrc")
+        next_section_start=${next_section_start:-$(wc -l < "$zshrc")}
+
         
         if [[ -z $next_section_start ]]; then
             next_section_start=$(wc -l < "$zshrc")
@@ -299,6 +308,7 @@ install_flutter() {
             echo "Flutter path already exists in .zshrc. Skipping update."
         fi
     }
+
 }
 
 # Function for macOS Menu (example, since the macOS part of your script is truncated)
