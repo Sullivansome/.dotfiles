@@ -311,6 +311,58 @@ install_flutter() {
 
 }
 
+install_python() {
+    # Check if Python is already installed
+    if command -v python3 &> /dev/null; then
+        echo "Python is already installed."
+        return 0
+    fi
+
+    # Determine OS
+    local os
+    os="$(uname)"
+
+    case "$os" in
+        Linux)
+            # Check for a specific Linux distribution
+            if [ -f "/etc/os-release" ]; then
+                source /etc/os-release
+                case "$ID" in
+                    ubuntu|debian)
+                        echo "Detected Ubuntu/Debian"
+                        sudo apt update
+                        sudo apt install -y python3 python3-pip
+                        ;;
+                    fedora)
+                        echo "Detected Fedora"
+                        sudo dnf install -y python3 python3-pip
+                        ;;
+                    *)
+                        echo "Unsupported Linux distribution"
+                        exit 1
+                        ;;
+                esac
+            else
+                echo "Unknown Linux distribution"
+                exit 1
+            fi
+            ;;
+        Darwin)
+            echo "Detected macOS"
+            # Check if Homebrew is installed
+            if ! command -v brew &> /dev/null; then
+                echo "Homebrew is not installed. Installing now..."
+                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            fi
+            brew install python3
+            ;;
+        *)
+            echo "Unsupported operating system"
+            exit 1
+            ;;
+    esac
+}
+
 # Function for macOS Menu (example, since the macOS part of your script is truncated)
 macos_menu() {
     echo "Choose an action for macOS:"
