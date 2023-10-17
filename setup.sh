@@ -131,11 +131,7 @@ install_oh_my_zsh() {
     fi
 }
 
-function install_openjdk() {
-    cd
-
-    echo "Preparing for OpenJDK installation..."
-
+function create_donwloads_and_dev_dir() {
     # Ensure download directory exists
     downloads_dir="$HOME/downloads"
     if [ ! -d "$downloads_dir" ]; then
@@ -145,6 +141,33 @@ function install_openjdk() {
     else
         echo "The Downloads folder already exists."
     fi
+
+    # Ensure 'dev' directory exists
+    dev_dir="$HOME/dev"
+    if [ ! -d "$dev_dir" ]; then
+        echo "Creating the 'dev' directory..."
+        mkdir "$dev_dir"
+        echo "'dev' directory created."
+    else
+        echo "The 'dev' directory already exists."
+    fi
+}
+
+backup_zshrc () {
+    zshrc="$HOME/.zshrc"
+    backup_dir="$HOME/.dotfiles_backup"
+    backup_file="$backup_dir/$(basename "$zshrc").backup_$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$backup_dir"
+    cp "$zshrc" "$backup_file"
+    echo ".zshrc backed up to: $backup_file"
+}
+
+function install_openjdk() {
+    cd
+
+    echo "Preparing for OpenJDK installation..."
+
+    create_donwloads_and_dev_dir
 
     # Fetch latest OpenJDK version
     page_content=$(curl -s https://jdk.java.net/)
@@ -179,16 +202,6 @@ function install_openjdk() {
         return 1
     fi
 
-    # Ensure 'dev' directory exists
-    dev_dir="$HOME/dev"
-    if [ ! -d "$dev_dir" ]; then
-        echo "Creating the 'dev' directory..."
-        mkdir "$dev_dir"
-        echo "'dev' directory created."
-    else
-        echo "The 'dev' directory already exists."
-    fi
-
     # Unzip OpenJDK
     tar -xzvf "$download_dest" -C "$dev_dir"
     echo "OpenJDK $latest_version unzipped to $dev_dir."
@@ -200,13 +213,8 @@ function install_openjdk() {
         return 1
     fi
 
-    # Update the .zshrc file
-    zshrc="$HOME/.zshrc"
-    backup_dir="$HOME/.dotfiles_backup"
-    backup_file="$backup_dir/$(basename "$zshrc").backup_$(date +%Y%m%d_%H%M%S)"
-    mkdir -p "$backup_dir"
-    cp "$zshrc" "$backup_file"
-    echo ".zshrc backed up to: $backup_file"
+    # Back up the .zshrc file   
+    backup_zshrc
 
     # Update .zshrc with JAVA_HOME and PATH, ensuring not to duplicate
     linux_section_start=$(grep -n 'elif \[\[ "$(uname)" == "Linux" \]\];' "$zshrc" | cut -d: -f1)
@@ -224,8 +232,6 @@ function install_openjdk() {
     fi
 
     echo "Updated .zshrc with the new JAVA_HOME and PATH."
-    echo "linux_section_start: $linux_section_start"
-    echo "next_section_start: $next_section_start"
     echo "$new_java_home"
 }
 
