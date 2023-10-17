@@ -411,6 +411,7 @@ if [ "$OS" == "Linux" ]; then
             4) install_oh_my_zsh ;;
             5) install_openjdk ;;
             6) install_flutter ;;
+            7) install_python ;;
             0) echo "Goodbye!"; break ;;
             *) echo "Invalid choice. Please choose between 1-7." ;;
         esac
