@@ -22,8 +22,8 @@ function update_packages() {
 }
 
 function install_essentials() {
-    echo -e "\e[33mInstalling curl, wget, jq, git, vim, and zsh...\e[0m"
-    sudo apt install -y curl wget jq git vim zsh || { echo "Failed to install required packages. Exiting."; exit 1; }
+    echo -e "\e[33mInstalling curl, wget, jq, git, vim, tree, and zsh...\e[0m"
+    sudo apt install -y curl wget jq git vim tree zsh || { echo "Failed to install required packages. Exiting."; exit 1; }
 }
 
 function setup_dotfiles() {
