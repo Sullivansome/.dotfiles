@@ -319,49 +319,72 @@ install_python() {
     fi
 
     # Determine OS
-    local os
-    os="$(uname)"
+    local os="$(uname)"
+    local latest_version
+    local id=""
+
+    # Check for Linux distribution
+    if [ "$os" == "Linux" ] && [ -f "/etc/os-release" ]; then
+        id=$(awk -F= '$1=="ID" {print $2}' /etc/os-release)
+    fi
 
     case "$os" in
         Linux)
-            # Check for a specific Linux distribution
-            if [ -f "/etc/os-release" ]; then
-                source /etc/os-release
-                case "$ID" in
-                    ubuntu|debian)
-                        echo "Detected Ubuntu/Debian"
-                        sudo apt update
-                        sudo apt install -y python3 python3-pip
-                        ;;
-                    fedora)
-                        echo "Detected Fedora"
-                        sudo dnf install -y python3 python3-pip
-                        ;;
-                    *)
-                        echo "Unsupported Linux distribution"
-                        exit 1
-                        ;;
-                esac
-            else
-                echo "Unknown Linux distribution"
-                exit 1
-            fi
+            case "$id" in
+                "ubuntu"|"debian")
+                    echo "Detected Ubuntu/Debian"
+                    sudo apt update || { echo "Failed to update repositories."; exit 1; }
+                    latest_version=$(apt-cache madison python3 | head -1 | awk '{print $3}')
+                    ;;
+                "fedora")
+                    echo "Detected Fedora"
+                    # Latest version can be fetched using dnf but might be complex.
+                    # For now, just installing the latest without version choice for Fedora.
+                    ;;
+                *)
+                    echo "Unsupported or unknown Linux distribution"
+                    exit 1
+                    ;;
+            esac
             ;;
         Darwin)
             echo "Detected macOS"
-            # Check if Homebrew is installed
-            if ! command -v brew &> /dev/null; then
-                echo "Homebrew is not installed. Installing now..."
-                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            fi
-            brew install python3
+            latest_version=$(brew info python --json | jq -r '.[0].versions.stable')
             ;;
         *)
             echo "Unsupported operating system"
             exit 1
             ;;
     esac
+
+    # Prompt the user
+    read -p "Which version of Python do you want to install? Press enter for the latest (default: $latest_version): " desired_version
+    desired_version=${desired_version:-$latest_version}
+    read -p "You chose Python version $desired_version. Proceed? (y/n): " confirmation
+    if [[ "$confirmation" != "y" ]]; then
+        echo "Installation aborted by the user."
+        return 0
+    fi
+
+    # Install based on OS and distribution
+    case "$os" in
+        Linux)
+            case "$id" in
+                "ubuntu"|"debian")
+                    sudo apt install -y python3="$desired_version" python3-pip || { echo "Failed to install Python."; exit 1; }
+                    ;;
+                "fedora")
+                    sudo dnf install -y python3 python3-pip || { echo "Failed to install Python."; exit 1; }
+                    ;;
+            esac
+            ;;
+        Darwin)
+            # In most cases, brew installs the latest version by default.
+            brew install python || { echo "Failed to install Python."; exit 1; }
+            ;;
+    esac
 }
+
 
 # Function for macOS Menu (example, since the macOS part of your script is truncated)
 macos_menu() {
