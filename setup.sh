@@ -33,8 +33,19 @@ function setup_dotfiles() {
     echo "Pulling dotfiles from Github..."
 
     # Variables
-    REPO_URL="https://github.com/Sullivansome/dotfiles.git"
+    REPO_URL="https://github.com/Sullivansome/.dotfiles.git"
     DEST_DIR="$HOME/.dotfiles"
+
+    # Prompt user for repo URL
+    echo -n "Enter your .dotfiles repo URL, REMEMBER TO COPY THE SETUP>SH TO YOUR REPO [default: $REPO_URL]: "
+    read user_input
+
+    # If user_input is not empty, update REPO_URL
+    if [[ ! -z "$user_input" ]]; then
+        REPO_URL="$user_input"
+    fi
+
+    echo "Using repository: $REPO_URL"
 
     # Check if git is installed
     if ! command -v git &> /dev/null; then
