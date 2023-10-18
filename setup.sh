@@ -56,7 +56,7 @@ function install_essentials() {
     os="$(uname)"
 
     # Define the packages to install
-    packages="curl wget jq git vim zsh"
+    packages="curl wget jq git vim tree zsh"
 
     echo -e "\e[33mInstalling $packages...\e[0m"
 
