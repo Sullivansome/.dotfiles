@@ -81,7 +81,7 @@ function setup_dotfiles() {
     set -e  # stop the script if any command returns a non-zero exit code
 
     # Pull dotfiles from Github and apply changes
-    echo "\e[33mPulling dotfiles from Github...\e[0m"
+    echo -e "\e[33mPulling dotfiles from Github...\e[0m"
 
     # Variables
     REPO_URL="https://github.com/Sullivansome/.dotfiles.git"
@@ -107,7 +107,7 @@ function setup_dotfiles() {
     cd  # Move to the home directory
 
     if [ -d "$DEST_DIR" ]; then
-        echo "\e[33mBacking up dotfiles...\e[0m"
+        echo -e "\e[33mBacking up dotfiles...\e[0m"
         backup_dir="$HOME/.dotfiles_backup"
         # Ensure the backup directory exists
         mkdir -p "$backup_dir"
@@ -128,7 +128,7 @@ function setup_dotfiles() {
     fi
 
     # Clone the repo
-    echo "\e[33mCloning the dotfiles repository...\e[0m"
+    echo -e "\e[33mCloning the dotfiles repository...\e[0m"
     mkdir -p "$DEST_DIR"
     git clone "$REPO_URL" "$DEST_DIR"
 
