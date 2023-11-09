@@ -524,23 +524,24 @@ function install_sdkman() {
     # Check if SDKMAN is already installed
     if [ -d "$HOME/.sdkman" ]; then
         echo "SDKMAN is already installed."
-    else
-        # Install SDKMAN
-        echo "Installing SDKMAN..."
-        curl -s "https://get.sdkman.io" | bash
-
-        # Append SDKMAN initialization to .zshrc if not already present
-        if ! grep -qc 'sdkman-init.sh' "$HOME/.zshrc"; then
-            echo 'Adding SDKMAN initialization to .zshrc'
-            echo -e '\n# Load SDKMAN' >> "$HOME/.zshrc"
-            echo '[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"' >> "$HOME/.zshrc"
-        fi
-
-        # Update current shell session with SDKMAN
-        source "$HOME/.sdkman/bin/sdkman-init.sh"
-        
-        echo "SDKMAN installation complete."
+        return 0
     fi
+
+    # Install SDKMAN
+    echo "Installing SDKMAN..."
+    curl -s "https://get.sdkman.io" | bash
+
+    # Append SDKMAN initialization to .zshrc if not already present
+    if ! grep -qc 'sdkman-init.sh' "$HOME/.zshrc"; then
+        echo 'Adding SDKMAN initialization to .zshrc'
+        echo -e '\n# Load SDKMAN' >> "$HOME/.zshrc"
+        echo '[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"' >> "$HOME/.zshrc"
+    fi
+
+    # Update current shell session with SDKMAN
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+    
+    echo "SDKMAN installation complete."
 }
 
 
