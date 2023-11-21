@@ -1,5 +1,3 @@
-# OS specified configurations start here
-if [[ "$(uname)" == "Darwin" ]]; then
 	# JAVA_HOME
 	export JAVA_HOME="/opt/homebrew/opt/openjdk"
 	# If you need to have openjdk first in your PATH, run:
@@ -18,15 +16,6 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	# Homebrew
 	# PATH="/usr/local/bin:$PATH"
 	eval "$(/opt/homebrew/bin/brew shellenv)"
-
-elif [[ "$(uname)" == "Linux" ]]; then
-	# Placeholder for Linux specific configurations
-	export JAVA_HOME=~/dev/jdk-21
-	export PATH="$JAVA_HOME/bin:$PATH"
-else
-	echo 'Unknown OS!'
-
-fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -146,3 +135,8 @@ source $ZSH/oh-my-zsh.sh
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# pynev
+eval "$(pyenv init -)"
+# To enable auto-activation
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
