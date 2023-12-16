@@ -105,7 +105,8 @@ function update_packages() {
 
 # Function to install essential packages
 function install_essentials() {
-    local linux_packages="curl wget jq git vim tree zsh zip unzip bat hyprland waybar rofi alacritty"
+    local linux_packages="curl wget jq git vim tree zsh zip unzip bat"
+    local arch_packages="alacritty hyprland rofi waybar obsidian"
     local darwin_packages="curl wget jq git vim tree zsh zip unzip bat"
 
     if [[ "$os" == "Linux" ]]; then
@@ -116,7 +117,8 @@ function install_essentials() {
                 ;;
             "arch")
                 sudo pacman -S --noconfirm $linux_packages || { echo -e "\e[31mFailed to install required packages using pacman. Exiting.\e[0m"; exit 1; }
-                install_aur_helper
+                sudo pacman -S --noconfirm $arch_packages || { echo -e "\e[31mFailed to install required packages using pacman. Exiting.\e[0m"; exit 1; }
+                install_aur_packages
                 ;;
             *)
                 echo -e "\e[31mUnsupported distribution detected. Exiting.\e[0m"
