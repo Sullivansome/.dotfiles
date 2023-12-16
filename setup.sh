@@ -142,7 +142,7 @@ function install_essentials() {
 # Function to install specific AUR packages
 function install_aur_packages() {
     install_aur_helper
-    local aur_packages="google-chrome visual-studio-code-bin spotify"
+    local aur_packages="google-chrome visual-studio-code-bin spotify xmind"
     # Install packages from the AUR
     echo -e "\e[33mInstalling $aur_packages...\e[0m"
     for package in $aur_packages; do
