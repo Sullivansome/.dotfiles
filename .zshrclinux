@@ -122,3 +122,5 @@ export NVM_DIR="$HOME/.nvm"
 # heomebrew
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
+# pyenv
+PATH="$HOME/.pyenv/shims:$PATH"

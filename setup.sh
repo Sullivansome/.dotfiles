@@ -106,7 +106,7 @@ function update_packages() {
 # Function to install essential packages
 function install_essentials() {
     local linux_packages="curl wget jq git vim tree zsh zip unzip bat"
-    local arch_packages="alacritty hyprland rofi waybar obsidian"
+    local arch_packages="alacritty hyprland rofi waybar obsidian noto-fonts-cjk"
     local darwin_packages="curl wget jq git vim tree zsh zip unzip bat"
 
     if [[ "$os" == "Linux" ]]; then
