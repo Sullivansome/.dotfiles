@@ -207,8 +207,13 @@ function setup_dotfiles() {
 
     # System links
     echo "Creating symbolic links..."
+
     [[ -L ~/.zshrc ]] && rm ~/.zshrc
-    ln -s ~/.dotfiles/.zshrc ~/.zshrc
+    if [[ "$os" == "Linux"]]; then
+        ln -s ~/.dotfiles/.zshrclinux ~/.zshrc
+    elif [[ "$os" == "Darwin" ]]; then
+        ln -s ~/.dotfiles/.zshrcdarwin ~/.zshrc
+    fi
 
     [[ -L ~/.gitconfig ]] && rm ~/.gitconfig
     ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
