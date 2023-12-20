@@ -113,15 +113,8 @@ source $ZSH/oh-my-zsh.sh
 
 # Other Paths:
 
-
-# JAVA_HOME
-export JAVA_HOME="/opt/homebrew/opt/openjdk"
-# If you need to have openjdk first in your PATH, run:
-#  echo 'export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> ~/.zshrc
-# For compilers to find openjdk you may need to set:
-#  export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
-export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
+# Go
+export PATH="$PATH:$HOME/go/bin"
 
 # Flutter
 export PATH="$PATH:$HOME/Dev/flutter/bin"
