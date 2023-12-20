@@ -217,16 +217,16 @@ function setup_dotfiles() {
     ln -s ~/.dotfiles/.p10k.zsh ~/.p10k.zsh
 
     local hypr_dir="$HOME/.config/hypr"
-    [[ -d "$hypr_dir" ]] && rm -rf "$hypr_dir"
+    mkdir -p "$hypr_dir"
 
     local alacritty_dir="$HOME/.config/alacritty"
-    [[ -d "$alacritty_dir" ]] && rm -rf "$alacritty_dir"
+    mkdir -p "$alacritty_dir"
 
     local rofi_dir="$HOME/.config/rofi"
-    [[ -d "$rofi_dir" ]] && rm -rf "$rofi_dir"
+    mkdir -p "$rofi_dir"
 
     local waybar_dir="$HOME/.config/waybar"
-    [[ -d "$waybar_dir" ]] && rm -rf "$waybar_dir"
+    mkdir -p "$waybar_dir"
 
     [[ -L ~/.config/hypr/hyprland.conf ]] && rm ~/.config/hypr/hyprland.conf
     ln -s ~/.dotfiles/.config/hypr/hyprland.conf ~/.config/hypr/hyprland.conf
