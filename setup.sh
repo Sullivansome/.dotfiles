@@ -111,6 +111,7 @@ function install_essentials() {
 
     if [[ "$os" == "Linux" ]]; then
         echo -e "\e[33mInstalling $linux_packages...\e[0m"
+        check_or_install_homebrew
         case $distro in
             "ubuntu"|"debian")
                 sudo apt install -y $linux_packages || { echo -e "\e[31mFailed to install required packages using apt. Exiting.\e[0m"; exit 1; }
