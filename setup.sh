@@ -115,10 +115,12 @@ function install_essentials() {
         case $distro in
             "ubuntu"|"debian")
                 sudo apt install -y $linux_packages || { echo -e "\e[31mFailed to install required packages using apt. Exiting.\e[0m"; exit 1; }
+                sudo apt install -y build-essential || { echo -e "\e[31mFailed to install build-essential package using apt. Exiting.\e[0m"; exit 1; }
                 ;;
             "arch")
                 sudo pacman -S --noconfirm $linux_packages || { echo -e "\e[31mFailed to install required packages using pacman. Exiting.\e[0m"; exit 1; }
                 sudo pacman -S --noconfirm $arch_packages || { echo -e "\e[31mFailed to install required packages using pacman. Exiting.\e[0m"; exit 1; }
+                sudo pacman -S --nonconfirm base-devel || { echo -e "\e[31mFailed to install base-devel package using pacman. Exiting.\e[0m"; exit 1; }
                 install_aur_packages
                 ;;
             *)
