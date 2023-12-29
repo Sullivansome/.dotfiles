@@ -255,6 +255,7 @@ function setup_dotfiles() {
     ln -s ~/.dotfiles/.config/waybar/style.css ~/.config/waybar/style.css
 
     echo "Dotfiles setup complete!"
+    cd ~/.dotfiles
 }
 
 function install_oh_my_zsh() {
