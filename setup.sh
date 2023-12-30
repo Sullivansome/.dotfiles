@@ -208,6 +208,11 @@ function setup_dotfiles() {
     mkdir -p "$DEST_DIR"
     git clone "$REPO_URL" "$DEST_DIR"
 
+    echo "Dotfiles download complete!"
+    cd 
+}
+
+function link_dotfiles() {
     # System links
     echo "Creating symbolic links..."
 
@@ -253,9 +258,6 @@ function setup_dotfiles() {
 
     [[ -L ~/.config/waybar/style.css ]] && rm ~/.config/waybar/style.css
     ln -s ~/.dotfiles/.config/waybar/style.css ~/.config/waybar/style.css
-
-    echo "Dotfiles setup complete!"
-    cd 
 }
 
 function install_oh_my_zsh() {
@@ -386,6 +388,7 @@ while true; do
             ;;
         2) 
             setup_dotfiles 
+            link_dotfiles
             echo "Dotfiles set up successfully."
             ;;
         3) 
