@@ -66,7 +66,7 @@ function install_aur_helper() {
     # Check if yay is already installed
     if ! command -v yay &> /dev/null; then
         echo "Installing yay as the AUR helper..."
-        sudo pacman -S --needed git base-devel
+        sudo pacman -S git base-devel
         git clone https://aur.archlinux.org/yay.git
         cd yay
         makepkg -si
@@ -105,9 +105,9 @@ function update_packages() {
 
 # Function to install essential packages
 function install_essentials() {
-    local linux_packages="curl wget jq git vim tree zsh zip unzip"
+    local linux_packages="curl wget git vim tree zsh zip unzip"
     local arch_packages="bat alacritty hyprland rofi waybar obsidian noto-fonts-cjk"
-    local darwin_packages="curl wget jq git vim tree zsh zip unzip bat"
+    local darwin_packages="curl wget git vim tree zsh zip unzip bat"
 
     if [[ "$os" == "Linux" ]]; then
         echo -e "\e[33mInstalling $linux_packages...\e[0m"
@@ -145,7 +145,7 @@ function install_essentials() {
 # Function to install specific AUR packages
 function install_aur_packages() {
     install_aur_helper
-    local aur_packages="google-chrome visual-studio-code-bin spotify xmind"
+    local aur_packages="google-chrome visual-studio-code-bin spotify"
     # Install packages from the AUR
     echo -e "\e[33mInstalling $aur_packages...\e[0m"
     for package in $aur_packages; do
@@ -247,8 +247,8 @@ function link_dotfiles() {
     [[ -L ~/.config/hypr/hyprpapaer.conf ]] && rm ~/.config/hypr/hyprpapaer.conf
     ln -s ~/.dotfiles/.config/hypr/hyprpapaer.conf ~/.config/hypr/hyprpapaer.conf
 
-    [[ -L ~/.config/alacritty/alacritty.yml ]] && rm ~/.config/alacritty/alacritty.yml
-    ln -s ~/.dotfiles/.config/alacritty/alacritty.yml ~/.config/alacritty/alacritty.yml
+    [[ -L ~/.config/alacritty/alacritty.yml ]] && rm ~/.config/alacritty/alacritty.toml
+    ln -s ~/.dotfiles/.config/alacritty/alacritty.yml ~/.config/alacritty/alacritty.toml
 
     [[ -L ~/.config/rofi/config.rasi ]] && rm ~/.config/rofi/config.rasi
     ln -s ~/.dotfiles/.config/rofi/config.rasi ~/.config/rofi/config.rasi
