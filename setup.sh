@@ -105,21 +105,26 @@ function update_packages() {
 
 # Function to install essential packages
 function install_essentials() {
-    local linux_packages="curl wget git vim tree zsh zip unzip"
-    local arch_packages="bat alacritty hyprland rofi waybar obsidian noto-fonts-cjk"
-    local darwin_packages="curl wget git vim tree zsh zip unzip bat"
-
+    local packages;
+    echo -e "\e[33mPlease enter packages to install. Separated by space: \e[0m"
+    read packages
+    
     if [[ "$os" == "Linux" ]]; then
-        echo -e "\e[33mInstalling $linux_packages...\e[0m"
-        check_or_install_homebrew
+        echo -e "\e[33mDo you need to install homebrew?\e[0m"
+        if [[ "install" == "y" ]]; then
+            check_or_install_homebrew
+        else
+            echo -e "\e[33mSkipping homebrew installation...\e[0m"
+        fi
+
+        echo -e "\e[33mInstalling $packages...\e[0m"
         case $distro in
             "ubuntu"|"debian")
-                sudo apt install -y $linux_packages || { echo -e "\e[31mFailed to install required packages using apt. Exiting.\e[0m"; exit 1; }
+                sudo apt install -y $packages || { echo -e "\e[31mFailed to install required packages using apt. Exiting.\e[0m"; exit 1; }
                 sudo apt install -y build-essential || { echo -e "\e[31mFailed to install build-essential package using apt. Exiting.\e[0m"; exit 1; }
                 ;;
             "arch")
-                sudo pacman -S --noconfirm $linux_packages || { echo -e "\e[31mFailed to install required packages using pacman. Exiting.\e[0m"; exit 1; }
-                sudo pacman -S --noconfirm $arch_packages || { echo -e "\e[31mFailed to install required packages using pacman. Exiting.\e[0m"; exit 1; }
+                sudo pacman -S --noconfirm $packages || { echo -e "\e[31mFailed to install required packages using pacman. Exiting.\e[0m"; exit 1; }
                 sudo pacman -S --nonconfirm base-devel || { echo -e "\e[31mFailed to install base-devel package using pacman. Exiting.\e[0m"; exit 1; }
                 install_aur_packages
                 ;;
@@ -145,7 +150,10 @@ function install_essentials() {
 # Function to install specific AUR packages
 function install_aur_packages() {
     install_aur_helper
-    local aur_packages="google-chrome visual-studio-code-bin spotify"
+    local $aur_packages;
+    echo -e "\e[33mPlease enter AUR packages to install. Separated by space: \e[0m"
+    read aur_packages
+
     # Install packages from the AUR
     echo -e "\e[33mInstalling $aur_packages...\e[0m"
     for package in $aur_packages; do
@@ -229,6 +237,12 @@ function link_dotfiles() {
     [[ -L ~/.p10k.zsh ]] && rm ~/.p10k.zsh
     ln -s ~/.dotfiles/.p10k.zsh ~/.p10k.zsh
 
+# Prompt user if they need to tweak .config file
+echo -n "Do you need to tweak the .config file? [y/n]: "
+read tweak_config
+
+if [[ "$tweak_config" == "y" ]]; then
+
     local config_dir="$HOME/.config"
     if [ ! -d "$config_dir" ]; then
         mkdir -p "$config_dir"
@@ -263,6 +277,10 @@ function link_dotfiles() {
 
     [[ -L ~/.config/waybar/style.css ]] && rm ~/.config/waybar/style.css
     ln -s ~/.dotfiles/.config/waybar/style.css ~/.config/waybar/style.css
+    
+fi
+
+
 }
 
 function install_oh_my_zsh() {
