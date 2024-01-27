@@ -229,6 +229,11 @@ function link_dotfiles() {
     [[ -L ~/.p10k.zsh ]] && rm ~/.p10k.zsh
     ln -s ~/.dotfiles/.p10k.zsh ~/.p10k.zsh
 
+    local config_dir="$HOME/.config"
+    if [ ! -d "$config_dir" ]; then
+        mkdir -p "$config_dir"
+    fi
+    
     local hypr_dir="$HOME/.config/hypr"
     mkdir -p "$hypr_dir"
 
