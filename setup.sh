@@ -7,6 +7,8 @@ distro=""
 # Check and store Linux distribution information
 if [[ "$os" == "Linux" ]] && [[ -f "/etc/os-release" ]]; then
     distro=$(awk -F= '$1=="ID" { print $2 }' /etc/os-release)
+elif [[ "$os" == "MSYS_NT"* ]]; then
+    msys="MSYS2"
 fi
 
 # HEADER
@@ -97,6 +99,12 @@ function update_packages() {
     elif [[ "$os" == "Darwin" ]]; then
         check_or_install_homebrew
         brew update || { echo "Failed to update packages. Exiting."; exit 1; }
+    elif [[ "$os" == "MSYS_NT" ]]; then
+        pacman -Syu || { echo "Failed to update packages. Exiting."; exit 1; }
+    else
+        echo -e "\e[31mUnsupported OS detected. Exiting.\e[0m"
+        exit 1
+    fi
     else
         echo -e "\e[31mUnsupported OS detected. Exiting.\e[0m"
         exit 1
@@ -138,6 +146,15 @@ function install_essentials() {
         for package in $darwin_packages; do
             brew install $package || { echo -e "\e[31mFailed to install $package. Exiting.\e[0m"; exit 1; }
         done
+    elif [[ "$os" == "MSYS_NT" ]]; then
+        echo -e "\e[33mInstalling $packages...\e[0m"
+        sudo pacman -S --noconfirm $packages || { echo -e "\e[31mFailed to install required packages using pacman. Exiting.\e[0m"; exit 1; }
+        sudo pacman -S --nonconfirm base-devel || { echo -e "\e[31mFailed to install base-devel package using pacman. Exiting.\e[0m"; exit 1; }
+        install_aur_packages
+    else
+        echo -e "\e[31mUnsupported OS detected. Exiting.\e[0m"
+        exit 1
+    fi
     else
         echo -e "\e[31mUnsupported OS detected. Exiting.\e[0m"
         exit 1
@@ -229,8 +246,14 @@ function link_dotfiles() {
         ln -s ~/.dotfiles/.zshrclinux ~/.zshrc
     elif [[ "$os" == "Darwin" ]]; then
         ln -s ~/.dotfiles/.zshrcdarwin ~/.zshrc
+    elif [[ "$os" == "MSYS_NT" ]]; then
+        ln -s ~/.dotfiles/.zshrcwin ~/.zshrc
+    else
+        echo -e "\e[31mUnsupported OS detected. Exiting.\e[0m"
+        exit 1
     fi
 
+    [[ -L ~/.zshenv ]] && rm ~/.zshenv
     [[ -L ~/.gitconfig ]] && rm ~/.gitconfig
     ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
 
