@@ -105,10 +105,6 @@ function update_packages() {
         echo -e "\e[31mUnsupported OS detected. Exiting.\e[0m"
         exit 1
     fi
-    else
-        echo -e "\e[31mUnsupported OS detected. Exiting.\e[0m"
-        exit 1
-    fi
 }
 
 # Function to install essential packages

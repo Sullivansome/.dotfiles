@@ -134,3 +134,5 @@ export NVM_DIR="$HOME/.nvm"
 eval "$(pyenv init -)"
 # To enable auto-activation
 if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+. "$HOME/.cargo/env"
+
