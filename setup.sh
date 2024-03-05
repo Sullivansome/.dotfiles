@@ -151,11 +151,6 @@ function install_essentials() {
         echo -e "\e[31mUnsupported OS detected. Exiting.\e[0m"
         exit 1
     fi
-    else
-        echo -e "\e[31mUnsupported OS detected. Exiting.\e[0m"
-        exit 1
-    fi
-
     echo -e "\e[32mInstallation complete!\e[0m"
 }
 
